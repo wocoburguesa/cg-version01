@@ -45,4 +45,4 @@ pip-log.txt
 .coverage
 .tox
 
-worldrat.komodoproject
+.out
