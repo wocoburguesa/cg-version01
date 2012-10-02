@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class PlayerHandler{
+class MovingObject{
  private:
   float x, y;
   float acceleration;
@@ -19,18 +19,24 @@ class PlayerHandler{
   float angle;
   float car_size;
   float radius;
+  POINT destination;
+  bool in_transit;
+  POINT target_vector;
   POINT mov_vector;
   vector< POINT > corners;
   vector< POINT > equations;
-  bool *pushed;
 
  public:
-  PlayerHandler(float max,
-		float accel,
-		float friction,
-		float size,
-		float ang=90.0f){
-    x = y = speed = 0.0f;   //initial pos and speed
+  MovingObject(float x_init,
+	       float y_init,
+	       float max,
+	       float accel,
+	       float friction,
+	       float size,
+	       float ang=90.0f){
+    x = x_init;
+    y = y_init;
+    speed = 0.0f;   //initial pos and speed
     acceleration = accel;   //rate of speed increase
     max_speed = max;        //maximum posible speed
     friction_constant = friction;
@@ -42,11 +48,7 @@ class PlayerHandler{
     //initial mov_vector
     angle = ang;
     mov_vector = POINT(cos(angle*PI/180),
-				    sin(angle*PI/180));
-
-    //button press flags
-    pushed = new bool[4];
-    pushed[0] = pushed[1] = pushed[2] = pushed[3] = 0;
+		       sin(angle*PI/180));
 
     corners.push_back(POINT(0.0f, 0.0f));
     corners.push_back(POINT(0.0f, 0.0f));
@@ -56,6 +58,7 @@ class PlayerHandler{
     set_bottom_left();
     set_bottom_right();
     set_top_right();
+
     for(int i = 0; i < corners.size(); ++i){
       float slope, intercept, x1, y1, x2, y2;
       x1 = corners[i].first;
@@ -73,19 +76,6 @@ class PlayerHandler{
     }
   }
 
-
-  /*** BUTTON PRESS CONTROLLERS ***/
-  void push_forward(){ pushed[0] = 1; };
-  void push_back(){ pushed[2] = 1; };
-  void push_left(){ pushed[1] = 1; };
-  void push_right(){ pushed[3] = 1; };
-
-  void release_forward(){ pushed[0] = 0; };
-  void release_back(){ pushed[2] = 0; };
-  void release_left(){ pushed[1] = 0; };
-  void release_right(){ pushed[3] = 0; };
-  /*** END BUTTON PRESS CONTROLLERS ***/
-
   /*** GETTERS FOR DRAWING THE CAR ***/
   POINT get_x_y(){
     return POINT(x, y);
@@ -97,7 +87,6 @@ class PlayerHandler{
   POINT get_top_right(){ return corners[3]; };
 
   /*** END GETTERS FOR CAR ***/
-
 
   void set_top_left(){
     float ang = (angle + TH);
@@ -150,39 +139,38 @@ class PlayerHandler{
       speed += current_friction;
   }
 
+  float distance(pair<float, float> a, pair<float, float> b){
+    return sqrt((a.first - b.first)*(a.first - b.first) +
+		(a.second - b.second)*(a.second - b.second));
+  }
+
   void update(){
     process_friction();
     update_position();
-    if(pushed[0]){
-      if(speed < 0)
-	current_friction = friction_constant*5;
-      else{
-	current_friction = friction_constant;
+    if(in_transit){
+      if(distance(POINT(x, y), destination) > 3.0f){
 	move_forward();
+	if(distance(mov_vector, target_vector) > 0.0001f){
+	  float current_slope = (destination.second - y)/(destination.first - x);
+	  if(abs(current_slope - (target_vector.second/target_vector.first)) >
+	     0.1f){
+	    float left_angle = angle + 0.05;
+	    float right_angle = angle - 0.05;
+	    if(distance(POINT(cos(left_angle*PI/180), sin(left_angle*PI/180)),
+			target_vector) <
+	       distance(POINT(cos(right_angle*PI/180), sin(right_angle*PI/180)),
+			target_vector))
+	      turn_left();
+	    else
+	      turn_right();
+	  }
+	}
       }
-    }
-    else;
-    if(pushed[2]){
-      if(speed > 0)
-	current_friction = friction_constant*5;
-      else{
-	current_friction = friction_constant;
-	move_back();
-      }
-    }
-    else;
-    if(pushed[1])
-      if(speed < 0)
-	turn_right();
       else
-	turn_left();
-    else;
-    if(pushed[3])
-      if(speed < 0)
-	turn_left();
-      else
-	turn_right();
-    else;
+	in_transit = 0;
+    }
+    else if(speed > 0)
+      move_back();
   }
 
   void update_position(){
@@ -213,8 +201,6 @@ class PlayerHandler{
     }
   }
 
-  //  void friction
-
   void move_forward(){
     if(speed < max_speed)
       speed += acceleration;
@@ -241,27 +227,32 @@ class PlayerHandler{
     mov_vector.second = sin(angle*PI/180);
   }
 
-  float get_radius(){ return radius; };
-
-  float get_max_speed(){ return max_speed; };
-
-  float get_size(){ return car_size; };
-
-  float get_acceleration(){ return acceleration; };
-
-  float get_friction(){ return friction_constant; };
-
-  vector<POINT> get_equations(){ return equations; };
+  float get_radius(){
+    return radius;
+  }
 
   void set_speed(float new_speed){
     speed = new_speed;
   }
 
+  float get_speed(){ return speed; };
+
   void bump(){
     //    speed = (speed > 0) ? -0.0005 : 0.0005;
-    speed = -(speed * 0.8);
+    speed = -(speed * 0.1f);
+    turn_left();
     update_position();
   }
 
-  vector< POINT > get_corners(){ return corners; };
+  void go_to(POINT target){
+    destination = target;
+    in_transit = 1;
+    float norm = sqrt((target.first * target.first) +
+		      (target.second * target.second));
+    target_vector = POINT(target.first/norm, target.second/norm);
+  }
+
+  vector<POINT> get_corners(){ return corners; };
+
+  vector<POINT> get_equations(){ return equations; };
 };

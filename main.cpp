@@ -5,20 +5,23 @@ NOTAS:
  */
 
 #include <stdlib.h>
+#include <vector>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
-#include "movement.h"
+#include "game_handler.h"
 
 #define UP 0
 #define LEFT 1
 #define DOWN 2
 #define RIGHT 3
 
-MovementHandler * movhan;
+GameHandler * gamehan;
+PlayerHandler * playerhan;
+float camera_distance;
 
 void changeSize(int w, int h) {
 
@@ -44,34 +47,72 @@ void changeSize(int w, int h) {
   glMatrixMode(GL_MODELVIEW);
 }
 
-void renderScene(void) {
+void renderScene(void){
   // Clear Color and Depth Buffers
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Reset transformations
   glLoadIdentity();
  
-  // Set the camera
-  gluLookAt(0.0f, 0.0f, 10.0f,
-	    0.0f, 0.0f,  0.0f,
-	    0.0f, 1.0f,  0.0f);
-  
-  glColor3f(0.0f, 0.0f, 0.9f);
-
-  movhan->update();
+  /*  movhan->update();
+  float car_x = movhan->get_x_y().first;
+  float car_y = movhan->get_x_y().second;
   pair<float, float> top_left = movhan->get_top_left();
   pair<float, float> bottom_left = movhan->get_bottom_left();
   pair<float, float> bottom_right = movhan->get_bottom_right();
-  pair<float, float> top_right = movhan->get_top_right();
+  pair<float, float> top_right = movhan->get_top_right();*/
 
-  //draw point
+  gamehan->update();
+  float player_x = playerhan->get_x_y().first;
+  float player_y = playerhan->get_x_y().second;
+  pair<float, float> top_left = playerhan->get_top_left();
+  pair<float, float> bottom_left = playerhan->get_bottom_left();
+  pair<float, float> bottom_right = playerhan->get_bottom_right();
+  pair<float, float> top_right = playerhan->get_top_right();
+
+  // Set the camera
+  /*  gluLookAt(0.0f, 0.0f, 10.0f,
+	    0.0f, 0.0f,  0.0f,
+	    0.0f, 1.0f,  0.0f);*/
+  gluLookAt(player_x, player_y, camera_distance,
+	    player_x, player_y,  0.0f,
+	    0.0f, 1.0f,  0.0f);
+
+  glColor3f(0.0f, 0.0f, 0.9f);
+
+  //draw player
   glBegin(GL_QUADS);
   glVertex3f(top_left.first, top_left.second, 0.0f);        //top left
   glVertex3f(bottom_left.first, bottom_left.second, 0.0f);  //bottom left
   glVertex3f(bottom_right.first, bottom_right.second, 0.0f);//bottom right
   glVertex3f(top_right.first, top_right.second, 0.0f);      //top right
   glEnd();
+
+  MapHandler maphan = gamehan->get_maphan();
+  //draw static objects
+  glColor3f(0.0f, 1.0f, 0.0f);
   
+  for(int i = 0; i < maphan.get_sobjects_count(); ++i){
+    StaticObject curr = maphan.get_sobject_by_idx(i);
+    vector< pair<float, float> > corners = curr.get_corners();
+    glBegin(GL_QUADS);
+    for(int j = 0; j < corners.size(); ++j)
+      glVertex3f(corners[j].first, corners[j].second, 0.0f);
+    glEnd();
+  }
+
+  //draw moving objects (enemies)
+  glColor3f(1.0f, 0.0f, 0.0f);
+  
+  for(int i = 0; i < maphan.get_mobjects_count(); ++i){
+    MovingObject curr = maphan.get_mobject_by_idx(i);
+    vector< pair<float, float> > corners = curr.get_corners();
+    glBegin(GL_QUADS);
+    for(int j = 0; j < corners.size(); ++j)
+      glVertex3f(corners[j].first, corners[j].second, 0.0f);
+    glEnd();
+  }
+
   glutSwapBuffers();
 }
 
@@ -80,61 +121,80 @@ void normal_key_handler(unsigned char key, int x, int y) {
     exit(0);
   switch(key){
   case 'w' :
-    movhan->push_forward(); break;
+    playerhan->push_forward(); break;
   case 's' :
-    movhan->push_back(); break;
+    playerhan->push_back(); break;
   case 'a' :
-    movhan->push_left(); break;
+    playerhan->push_left(); break;
   case 'd' : 
-    movhan->push_right(); break;
+    playerhan->push_right(); break;
   }
 }
 
 void special_key_handler(int key, int x, int y) {
   switch(key){
   case GLUT_KEY_UP :
-    movhan->push_forward(); break;
+    camera_distance--; break;
   case GLUT_KEY_DOWN :
-    movhan->push_back(); break;
+    camera_distance++; break;
   case GLUT_KEY_LEFT :
-    movhan->push_left(); break;
+    playerhan->push_left(); break;
   case GLUT_KEY_RIGHT : 
-    movhan->push_right(); break;
+    playerhan->push_right(); break;
   }
 }
 
 void normal_release_handler(unsigned char key, int x, int y) {
   switch(key){
   case 'w' :
-    movhan->release_forward(); break;
+    playerhan->release_forward(); break;
   case 's' :
-    movhan->release_back(); break;
+    playerhan->release_back(); break;
   case 'a' :
-    movhan->release_left(); break;
+    playerhan->release_left(); break;
   case 'd' : 
-    movhan->release_right(); break;
+    playerhan->release_right(); break;
   }
 }
 
 void special_release_handler(int key, int x, int y) {
   switch(key){
   case GLUT_KEY_UP :
-    movhan->release_forward(); break;
+    break;
   case GLUT_KEY_DOWN :
-    movhan->release_back(); break;
+    break;
   case GLUT_KEY_LEFT :
-    movhan->release_left(); break;
+    playerhan->release_left(); break;
   case GLUT_KEY_RIGHT : 
-    movhan->release_right(); break;
+    playerhan->release_right(); break;
   }
 }
 
 int main(int argc, char **argv) {
-  
-  movhan = new MovementHandler(0.1f,
-			       0.0000001f,
-			       0.00000005f,
-			       1.154700538f);
+  camera_distance = 10.f;
+
+  playerhan = new PlayerHandler(0.1f,
+				0.0000001f,
+				0.00000005f,
+				1.154700538f);
+  gamehan = new GameHandler(playerhan);
+
+  gamehan->spawn_enemy();
+
+  vector< pair<float, float> > building;
+  building.push_back(pair<float, float>(5,3));
+  building.push_back(pair<float, float>(5,-3));
+  building.push_back(pair<float, float>(11,-3));
+  building.push_back(pair<float, float>(11,3));
+  gamehan->add_static_object(building);
+  building.clear();
+
+  /*  building.push_back(pair<float, float>(-3,3));
+  building.push_back(pair<float, float>(-3,-3));
+  building.push_back(pair<float, float>(-2,-3));
+  building.push_back(pair<float, float>(-2,3));
+  maphan->add_static_object(building);
+  building.clear();*/
 
   // init GLUT and create window
   glutInit(&argc, argv);
