@@ -42,7 +42,7 @@ class PlayerHandler{
     //initial mov_vector
     angle = ang;
     mov_vector = POINT(cos(angle*PI/180),
-				    sin(angle*PI/180));
+		       sin(angle*PI/180));
 
     //button press flags
     pushed = new bool[4];
@@ -79,6 +79,7 @@ class PlayerHandler{
   void push_back(){ pushed[2] = 1; };
   void push_left(){ pushed[1] = 1; };
   void push_right(){ pushed[3] = 1; };
+  void push_space(){ shoot(); };
 
   void release_forward(){ pushed[0] = 0; };
   void release_back(){ pushed[2] = 0; };

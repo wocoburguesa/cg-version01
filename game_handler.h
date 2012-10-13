@@ -38,10 +38,10 @@ class GameHandler{
     size = min_enemy_size + (max_enemy_size - min_enemy_size)*size/100.0f;
     float max_speed = rand() % 100;
     max_speed = min_enemy_speed + (max_enemy_speed - min_enemy_speed)*max_speed/100.0f;
-    float x = player->get_x_y().first - 3.0f;
+    float x = player->get_x_y().first - 6.0f;
     float y = player->get_x_y().second - 1.0f;
     maphan.add_moving_object(x, y, max_speed, player->get_acceleration(),
-			     player->get_friction(), size, 90.0f);
+			     player->get_friction(), size, 0.0f);
   }
 
   void update(){

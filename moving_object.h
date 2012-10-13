@@ -5,6 +5,7 @@
 #define PI 3.141592654
 #define TH 30             //angle formed between the diagonal and mov_vector
 #define POINT pair<float, float>
+#define BULLET_SPEED 0.2f
 
 using namespace std;
 
@@ -17,7 +18,7 @@ class MovingObject{
   float friction_constant;
   float current_friction;
   float angle;
-  float car_size;
+  float size;
   float radius;
   POINT destination;
   bool in_transit;
@@ -32,7 +33,7 @@ class MovingObject{
 	       float max,
 	       float accel,
 	       float friction,
-	       float size,
+	       float car_size,
 	       float ang=90.0f){
     x = x_init;
     y = y_init;
@@ -42,8 +43,8 @@ class MovingObject{
     friction_constant = friction;
     current_friction = friction;
 
-    car_size = size;
-    radius = size;
+    size = car_size;
+    radius = car_size;
 
     //initial mov_vector
     angle = ang;
@@ -94,7 +95,7 @@ class MovingObject{
 
     float denom = sqrt(direction.first*direction.first +
 		       direction.second*direction.second);
-    float factor = car_size / denom;
+    float factor = size / denom;
     corners[0].first = x + (direction.first * factor);
     corners[0].second = y + (direction.second * factor);
   }
@@ -105,7 +106,7 @@ class MovingObject{
     
     float denom = sqrt(direction.first*direction.first +
 		       direction.second*direction.second);
-    float factor = car_size / denom;
+    float factor = size / denom;
     corners[3].first = x + (direction.first * factor);
     corners[3].second = y + (direction.second * factor);
   }
@@ -116,7 +117,7 @@ class MovingObject{
     
     float denom = sqrt(direction.first*direction.first +
 		       direction.second*direction.second);
-    float factor = car_size / denom;
+    float factor = size / denom;
     corners[1].first = x + (direction.first * factor);
     corners[1].second = y + (direction.second * factor);
   }
@@ -127,7 +128,7 @@ class MovingObject{
     
     float denom = sqrt(direction.first*direction.first +
 		       direction.second*direction.second);
-    float factor = car_size / denom;
+    float factor = size / denom;
     corners[2].first = x + (direction.first * factor);
     corners[2].second = y + (direction.second * factor);
   }
@@ -153,7 +154,7 @@ class MovingObject{
 	if(distance(mov_vector, target_vector) > 0.0001f){
 	  float current_slope = (destination.second - y)/(destination.first - x);
 	  if(abs(current_slope - (target_vector.second/target_vector.first)) >
-	     0.1f){
+	     0.01f){
 	    float left_angle = angle + 0.05;
 	    float right_angle = angle - 0.05;
 	    if(distance(POINT(cos(left_angle*PI/180), sin(left_angle*PI/180)),
@@ -237,6 +238,10 @@ class MovingObject{
 
   float get_speed(){ return speed; };
 
+  float get_angle(){ return angle; };
+
+  POINT get_mov_vector(){ return mov_vector };
+
   void bump(){
     //    speed = (speed > 0) ? -0.0005 : 0.0005;
     speed = -(speed * 0.1f);
@@ -255,4 +260,29 @@ class MovingObject{
   vector<POINT> get_corners(){ return corners; };
 
   vector<POINT> get_equations(){ return equations; };
+};
+
+class Projectile : public MovingObject{
+ private:
+  float distance_traveled;
+
+ public:
+  Projectile(MovingObject * shooter){
+    POINT shooter_vec = shooter->get_mov_vector();
+    float denom =
+      sqrt(shooter_vec.first*shooter_vec.first +
+	   shooter_vec.second*shooter_vec.second);
+    float factor = shooter->get_speed() / denom;
+    x = shooter->get_x_y().first + shooter_vec.first * factor;
+    y = shooter->get_x_y().second + shooter_vec.second * factor;
+
+    acceleration = 0.0f;
+    max_speed = speed = BULLET_SPEED;
+
+    friction_constant = current_friction = 0.0f;
+    angle = shooter->get_angle();
+
+    size = radius = 0.2f;
+    mov_vector = shooter_vec;
+  }
 };

@@ -211,7 +211,7 @@ class MapHandler{
     check_moving_vs_moving_collisions();
     player->update();
     for(int i = 0; i < mobjects.size(); ++i){
-      mobjects[i].go_to(player->get_x_y());
+      mobjects[i].go_to(POINT(8,0));
       mobjects[i].update();
     }
   }
