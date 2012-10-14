@@ -63,6 +63,7 @@ class GameHandler{
     }
     if(player->get_shot_fired())
       spawn_projectile(player);
+
     maphan->update();
   }
 

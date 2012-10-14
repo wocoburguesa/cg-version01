@@ -47,6 +47,10 @@ class PlayerHandler : public MovingObject{
     // setting initial status of shot_fired
     shot_fired = 0;
 
+    //setting initial status of pushed array
+    pushed = new bool[4];
+    pushed[0] = pushed[1] = pushed[2] = pushed[3] = 0;
+
     // setting initial movement vector
     mov_vector = POINT(cos(angle*PI/180),
 		       sin(angle*PI/180));
@@ -133,7 +137,6 @@ class PlayerHandler : public MovingObject{
 
   void bump(){
     speed = -(speed * 0.1f);
-    turn_left();
     update_position();
   }
 };
