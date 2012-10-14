@@ -141,8 +141,8 @@ void special_key_handler(int key, int x, int y) {
     playerhan->push_left(); break;
   case GLUT_KEY_RIGHT : 
     playerhan->push_right(); break;
-  case GLUT_KEY_SPACE : 
-    playerhan->push_space(); break;
+    /*  case GLUT_KEY_SPACE : 
+	playerhan->push_space(); break;*/
   }
 }
 

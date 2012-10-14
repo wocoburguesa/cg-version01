@@ -1,9 +1,9 @@
 #include <math.h>
 #include <unistd.h>
 #include <iostream>
-#include "static_object.h"
-#include "moving_object.h"
-#include "movement.h"
+#include "p_static_object.h"
+#include "p_enemy.h"
+#include "p_player.h"
 
 #define POINT pair<float, float>
 #define INF 0xffffffff

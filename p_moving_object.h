@@ -1,30 +1,22 @@
 #include <math.h>
 #include <unistd.h>
 #include <iostream>
+#include "prueba.h"
 
-#define PI 3.141592654
-#define TH 30             //angle formed between the diagonal and mov_vector
-#define POINT pair<float, float>
-#define BULLET_SPEED 0.2f
+#ifndef P_MOVING_OBJECT_H
+#define P_MOVING_OBJECT_H
 
 using namespace std;
 
 class MovingObject{
- private:
-  float x, y;
+ protected:
   float acceleration;
   float speed;
   float max_speed;
   float friction_constant;
   float current_friction;
   float angle;
-  float radius;
-  POINT destination;
-  bool in_transit;
-  POINT target_vector;
   POINT mov_vector;
-  vector< POINT > corners;
-  vector< POINT > equations;
 
  public:
   MovingObject(float x_init,
@@ -34,21 +26,35 @@ class MovingObject{
 	       float friction,
 	       float car_size,
 	       float ang=90.0f){
+
+    // setting initial position
     x = x_init;
     y = y_init;
-    speed = 0.0f;   //initial pos and speed
-    acceleration = accel;   //rate of speed increase
-    max_speed = max;        //maximum posible speed
+
+    // setting initial speed
+    speed = 0.0f;
+
+    // setting rate of speed increase
+    acceleration = accel;
+
+    // setting maximum possible speed
+    max_speed = max;
+
+    // setting friction constant and initial friction
     friction_constant = friction;
     current_friction = friction;
-
+    
+    // setting radius
     radius = car_size;
 
-    //initial mov_vector
+    // setting initial angle (counter-clockwise)
     angle = ang;
+
+    // setting initial movement vector an
     mov_vector = POINT(cos(angle*PI/180),
 		       sin(angle*PI/180));
 
+    // setting initial corners
     corners.push_back(POINT(0.0f, 0.0f));
     corners.push_back(POINT(0.0f, 0.0f));
     corners.push_back(POINT(0.0f, 0.0f));
@@ -58,6 +64,7 @@ class MovingObject{
     set_bottom_right();
     set_top_right();
 
+    // setting initial equations
     for(int i = 0; i < corners.size(); ++i){
       float slope, intercept, x1, y1, x2, y2;
       x1 = corners[i].first;
@@ -75,18 +82,22 @@ class MovingObject{
     }
   }
 
-  /*** GETTERS FOR DRAWING THE CAR ***/
-  POINT get_x_y(){
-    return POINT(x, y);
-  }
-
+  /********** GETTERS **********/
   POINT get_top_left(){ return corners[0]; };
   POINT get_bottom_left(){ return corners[1]; };
   POINT get_bottom_right(){ return corners[2]; };
   POINT get_top_right(){ return corners[3]; };
 
-  /*** END GETTERS FOR CAR ***/
+  float get_speed(){ return speed; };
+  float get_angle(){ return angle; };
+  float get_max_speed(){ return max_speed; };
+  float get_size(){ return radius; };
+  float get_acceleration(){ return acceleration; };
+  float get_friction(){ return friction_constant; };
+  POINT get_mov_vector(){ return mov_vector; };
+  /********** GETTERS **********/
 
+  /********** UPDATERS  **********/
   void set_top_left(){
     float ang = (angle + TH);
     POINT direction(cos(ang*PI/180.0f), sin(ang*PI/180.0f));
@@ -138,51 +149,20 @@ class MovingObject{
       speed += current_friction;
   }
 
-  float distance(pair<float, float> a, pair<float, float> b){
-    return sqrt((a.first - b.first)*(a.first - b.first) +
-		(a.second - b.second)*(a.second - b.second));
-  }
-
-  void update(){
-    process_friction();
-    update_position();
-    if(in_transit){
-      if(distance(POINT(x, y), destination) > 3.0f){
-	move_forward();
-	if(distance(mov_vector, target_vector) > 0.0001f){
-	  float current_slope = (destination.second - y)/(destination.first - x);
-	  if(abs(current_slope - (target_vector.second/target_vector.first)) >
-	     0.01f){
-	    float left_angle = angle + 0.05;
-	    float right_angle = angle - 0.05;
-	    if(distance(POINT(cos(left_angle*PI/180), sin(left_angle*PI/180)),
-			target_vector) <
-	       distance(POINT(cos(right_angle*PI/180), sin(right_angle*PI/180)),
-			target_vector))
-	      turn_left();
-	    else
-	      turn_right();
-	  }
-	}
-      }
-      else
-	in_transit = 0;
-    }
-    else if(speed > 0)
-      move_back();
-  }
-
   void update_position(){
     float denom = sqrt(mov_vector.first*mov_vector.first +
 		       mov_vector.second*mov_vector.second);
     float factor = speed / denom;
     x += mov_vector.first * factor;
     y += mov_vector.second * factor;
+    
+    // update corners
     set_top_left();
     set_bottom_left();
     set_bottom_right();
     set_top_right();
 
+    // update equations
     for(int i = 0; i < corners.size(); ++i){
       float slope, intercept, x1, y1, x2, y2;
       x1 = corners[i].first;
@@ -199,8 +179,10 @@ class MovingObject{
       }
     }
   }
+  /********** UPDATERS **********/
 
-  void move_forward(){
+  /********** MOVEMENT HANDLERS **********/
+    void move_forward(){
     if(speed < max_speed)
       speed += acceleration;
     else;
@@ -226,61 +208,20 @@ class MovingObject{
     mov_vector.second = sin(angle*PI/180);
   }
 
-  float get_radius(){
-    return radius;
-  }
-
-  void set_speed(float new_speed){
-    speed = new_speed;
-  }
-
-  float get_speed(){ return speed; };
-
-  float get_angle(){ return angle; };
-
-  POINT get_mov_vector(){ return mov_vector; };
-
   void bump(){
-    //    speed = (speed > 0) ? -0.0005 : 0.0005;
     speed = -(speed * 0.1f);
     turn_left();
     update_position();
   }
+  /********** MOVEMENT HANDLERS **********/
 
-  void go_to(POINT target){
-    destination = target;
-    in_transit = 1;
-    float norm = sqrt((target.first * target.first) +
-		      (target.second * target.second));
-    target_vector = POINT(target.first/norm, target.second/norm);
-  }
-
-  vector<POINT> get_corners(){ return corners; };
-
-  vector<POINT> get_equations(){ return equations; };
+  virtual void update() = 0;
 };
 
-/*class Projectile : public MovingObject{
- private:
-  float distance_traveled;
-
+class C : public A{
  public:
-  Projectile(MovingObject * shooter){
-    POINT shooter_vec = shooter->get_mov_vector();
-    float denom =
-      sqrt(shooter_vec.first*shooter_vec.first +
-	   shooter_vec.second*shooter_vec.second);
-    float factor = shooter->get_speed() / denom;
-    x = shooter->get_x_y().first + shooter_vec.first * factor;
-    y = shooter->get_x_y().second + shooter_vec.second * factor;
+  C(){ cout <<  "construyendo C"  << endl; }
+  void print2(){ cout << "print2" << endl ;}
+};
 
-    acceleration = 0.0f;
-    max_speed = speed = BULLET_SPEED;
-
-    friction_constant = current_friction = 0.0f;
-    angle = shooter->get_angle();
-
-    size = radius = 0.2f;
-    mov_vector = shooter_vec;
-  }
-  };*/
+#endif
