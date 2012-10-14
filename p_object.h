@@ -1,8 +1,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <iostream>
-#define POINT pair<float, float>
-#define INF 0xffffffff
+#include "constants.h"
 
 #ifndef P_OBJECT_H
 #define P_OBJECT_H

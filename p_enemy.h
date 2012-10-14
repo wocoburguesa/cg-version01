@@ -11,10 +11,81 @@ using namespace std;
 class Enemy : public MovingObject{
  private:
   POINT destination;
-  bool in_transit;
   POINT target_vector;
+  bool in_transit;
+
+  bool shot_fired;
 
  public:
+  Enemy(float x_init,
+	float y_init,
+	float max,
+	float accel,
+	float friction,
+	float car_size,
+	float ang=90.0f){
+    // setting initial position
+    x = x_init;
+    y = y_init;
+
+    // setting initial speed
+    speed = 0.0f;
+
+    // setting rate of speed increase
+    acceleration = accel;
+
+    // setting maximum possible speed
+    max_speed = max;
+
+    // setting friction constant and initial friction
+    friction_constant = friction;
+    current_friction = friction;
+    
+    // setting radius
+    radius = car_size;
+
+    // setting initial angle (counter-clockwise)
+    angle = ang;
+
+    // setting initial status of shot_fired
+    shot_fired = 0;
+
+    // setting initial movement vector
+    mov_vector = POINT(cos(angle*PI/180),
+		       sin(angle*PI/180));
+
+    // setting initial corners
+    corners.push_back(POINT(0.0f, 0.0f));
+    corners.push_back(POINT(0.0f, 0.0f));
+    corners.push_back(POINT(0.0f, 0.0f));
+    corners.push_back(POINT(0.0f, 0.0f));
+    set_top_left();
+    set_bottom_left();
+    set_bottom_right();
+    set_top_right();
+
+    // setting initial equations
+    for(int i = 0; i < corners.size(); ++i){
+      float slope, intercept, x1, y1, x2, y2;
+      x1 = corners[i].first;
+      y1 = corners[i].second;
+      x2 = corners[(i+1)%corners.size()].first;
+      y2 = corners[(i+1)%corners.size()].second;
+      if(x1 != x2){
+	slope = (y1 - y2)/(x1 - x2);
+	intercept = y1 - slope * x1;
+	equations.push_back(pair<float, float>(slope, intercept));
+      }
+      else{
+	equations.push_back(pair<float, float>(x1, INF));
+      }
+    }
+  }
+
+  /********** GETTERS **********/
+  bool get_shot_fired(){ return shot_fired; }
+  /********** GETTERS **********/
+
   void update(){
     process_friction();
     update_position();
@@ -44,6 +115,12 @@ class Enemy : public MovingObject{
       move_back();
   }
 
+  void bump(){
+    speed = -(speed * 0.1f);
+    turn_left();
+    update_position();
+  }
+
   void go_to(POINT target){
     destination = target;
     in_transit = 1;
@@ -52,12 +129,6 @@ class Enemy : public MovingObject{
     target_vector = POINT(target.first/norm, target.second/norm);
   }
 
-};
-
-class C : public A{
- public:
-  C(){ cout <<  "construyendo C"  << endl; }
-  void print2(){ cout << "print2" << endl ;}
 };
 
 #endif

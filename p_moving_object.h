@@ -1,14 +1,14 @@
 #include <math.h>
 #include <unistd.h>
 #include <iostream>
-#include "prueba.h"
+#include "p_object.h"
 
 #ifndef P_MOVING_OBJECT_H
 #define P_MOVING_OBJECT_H
 
 using namespace std;
 
-class MovingObject{
+class MovingObject : public Object{
  protected:
   float acceleration;
   float speed;
@@ -19,6 +19,8 @@ class MovingObject{
   POINT mov_vector;
 
  public:
+  MovingObject(){};
+
   MovingObject(float x_init,
 	       float y_init,
 	       float max,
@@ -50,7 +52,7 @@ class MovingObject{
     // setting initial angle (counter-clockwise)
     angle = ang;
 
-    // setting initial movement vector an
+    // setting initial movement vector
     mov_vector = POINT(cos(angle*PI/180),
 		       sin(angle*PI/180));
 
@@ -182,7 +184,7 @@ class MovingObject{
   /********** UPDATERS **********/
 
   /********** MOVEMENT HANDLERS **********/
-    void move_forward(){
+  void move_forward(){
     if(speed < max_speed)
       speed += acceleration;
     else;
@@ -208,11 +210,7 @@ class MovingObject{
     mov_vector.second = sin(angle*PI/180);
   }
 
-  void bump(){
-    speed = -(speed * 0.1f);
-    turn_left();
-    update_position();
-  }
+  virtual void bump() = 0;
   /********** MOVEMENT HANDLERS **********/
 
   virtual void update() = 0;

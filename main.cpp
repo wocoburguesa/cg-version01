@@ -88,13 +88,13 @@ void renderScene(void){
   glVertex3f(top_right.first, top_right.second, 0.0f);      //top right
   glEnd();
 
-  MapHandler maphan = gamehan->get_maphan();
+  MapHandler * maphan = gamehan->get_maphan();
   //draw static objects
   glColor3f(0.0f, 1.0f, 0.0f);
   
-  for(int i = 0; i < maphan.get_sobjects_count(); ++i){
-    StaticObject curr = maphan.get_sobject_by_idx(i);
-    vector< pair<float, float> > corners = curr.get_corners();
+  for(int i = 0; i < maphan->get_buildings_count(); ++i){
+    StaticObject * curr = maphan->get_building_by_idx(i);
+    vector<POINT> corners = curr->get_corners();
     glBegin(GL_QUADS);
     for(int j = 0; j < corners.size(); ++j)
       glVertex3f(corners[j].first, corners[j].second, 0.0f);
@@ -104,9 +104,9 @@ void renderScene(void){
   //draw moving objects (enemies)
   glColor3f(1.0f, 0.0f, 0.0f);
   
-  for(int i = 0; i < maphan.get_mobjects_count(); ++i){
-    MovingObject curr = maphan.get_mobject_by_idx(i);
-    vector< pair<float, float> > corners = curr.get_corners();
+  for(int i = 0; i < maphan->get_enemies_count(); ++i){
+    Enemy * curr = maphan->get_enemy_by_idx(i);
+    vector<POINT> corners = curr->get_corners();
     glBegin(GL_QUADS);
     for(int j = 0; j < corners.size(); ++j)
       glVertex3f(corners[j].first, corners[j].second, 0.0f);
@@ -175,10 +175,13 @@ void special_release_handler(int key, int x, int y) {
 int main(int argc, char **argv) {
   camera_distance = 10.f;
 
-  playerhan = new PlayerHandler(0.1f,
-				0.0000001f,
-				0.00000005f,
-				1.154700538f);
+  playerhan = new PlayerHandler(PLAYER_ORIGINAL_X,
+				PLAYER_ORIGINAL_Y,
+				PLAYER_MAX_SPEED,
+				PLAYER_ACCELERATION,
+				PLAYER_FRICTION,
+				PLAYER_SIZE,
+				PLAYER_ORIGINAL_ANGLE);
   gamehan = new GameHandler(playerhan);
 
   gamehan->spawn_enemy();
@@ -188,7 +191,7 @@ int main(int argc, char **argv) {
   building.push_back(pair<float, float>(5,-3));
   building.push_back(pair<float, float>(11,-3));
   building.push_back(pair<float, float>(11,3));
-  gamehan->add_static_object(building);
+  gamehan->spawn_building(building);
   building.clear();
 
   /*  building.push_back(pair<float, float>(-3,3));

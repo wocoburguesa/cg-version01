@@ -1,7 +1,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <iostream>
-#include "prueba.h"
+#include "p_object.h"
 
 #ifndef P_STATIC_OBJECT_H
 #define P_STATIC_OBJECT_H
