@@ -14,6 +14,7 @@ class Enemy : public MovingObject{
   POINT target_vector;
   bool in_transit;
 
+  float health;
   bool shot_fired;
 
  public:
@@ -23,7 +24,8 @@ class Enemy : public MovingObject{
 	float accel,
 	float friction,
 	float car_size,
-	float ang=90.0f){
+	float ang,
+	float health_init){
     // setting initial position
     x = x_init;
     y = y_init;
@@ -46,6 +48,9 @@ class Enemy : public MovingObject{
 
     // setting initial angle (counter-clockwise)
     angle = ang;
+
+    // setting initial health
+    health = health_init;
 
     // setting initial status of shot_fired
     shot_fired = 0;
@@ -86,6 +91,10 @@ class Enemy : public MovingObject{
   bool get_shot_fired(){ return shot_fired; }
   /********** GETTERS **********/
 
+  /********** SETTERS **********/
+  void flip_shot_fired(){ shot_fired = !shot_fired; }
+  /********** SETTERS **********/
+
   void update(){
     process_friction();
     update_position();
@@ -115,8 +124,20 @@ class Enemy : public MovingObject{
       move_back();
   }
 
+  void register_hit(){
+    health -= PROJECTILE_STRENGTH;
+  }
+
+  bool vital_signs(){
+    if(health <= 0.0f)
+      return 0;
+    return 1;
+  }
+
+  float get_life(){ return health; }
+
   void bump(){
-    speed = -(speed * 0.1f);
+    speed = -(speed * 0.4f);
     turn_left();
     update_position();
   }

@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <iostream>
 #include "map_handler.h"
+#include "p_lifebar.h"
 
 #define POINT pair<float, float>
 
@@ -12,15 +13,18 @@ class GameHandler{
   float friction;
   MapHandler * maphan;
   PlayerHandler * player;
+  LifeBar * lifebar;
 
  public:
   GameHandler(PlayerHandler * p){
     maphan = new MapHandler();
     player = p;
     maphan->add_player(p);
+    lifebar = new LifeBar(p);
   }
 
   MapHandler* get_maphan(){ return maphan; };
+  LifeBar* get_lifebar(){ return lifebar; };
 
   void spawn_building(vector<POINT> &corners){
     maphan->add_static_object(corners);
@@ -34,8 +38,10 @@ class GameHandler{
       MIN_ENEMY_SPEED + (MAX_ENEMY_SPEED - MIN_ENEMY_SPEED)*max_speed/100.0f;
     float x = player->get_x_y().first - 6.0f;
     float y = player->get_x_y().second - 1.0f;
+    float angle = PLAYER_STARTING_ANGLE;
     maphan->add_enemy_object(x, y, max_speed, player->get_acceleration(),
-			     player->get_friction(), size, 0.0f);
+			     player->get_friction(), size, 0.0f,
+			     ENEMY_STARTING_HEALTH);
   }
 
   void spawn_projectile(MovingObject * shooter){
@@ -58,11 +64,15 @@ class GameHandler{
   void update(){
     vector<Enemy*> enemies = maphan->get_enemies();
     for(int i = 0; i < enemies.size(); ++i){
-      if(enemies[i]->get_shot_fired())
+      if(enemies[i]->get_shot_fired()){
 	spawn_projectile(enemies[i]);
+	enemies[i]->flip_shot_fired();
+      }
     }
-    if(player->get_shot_fired())
+    if(player->get_shot_fired()){
       spawn_projectile(player);
+      player->flip_shot_fired();
+    }
 
     maphan->update();
   }

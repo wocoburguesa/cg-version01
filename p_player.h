@@ -10,8 +10,10 @@ using namespace std;
 
 class PlayerHandler : public MovingObject{
  private:
+  float health;
   bool *pushed;
   bool shot_fired;
+  int flare_shown;
 
  public:
   PlayerHandler(float x_init,
@@ -20,7 +22,8 @@ class PlayerHandler : public MovingObject{
 		float accel,
 		float friction,
 		float car_size,
-		float ang=90.0f){
+		float ang,
+		float health_init){
     // setting initial position
     x = x_init;
     y = y_init;
@@ -43,6 +46,9 @@ class PlayerHandler : public MovingObject{
 
     // setting initial angle (counter-clockwise)
     angle = ang;
+
+    // setting initial health
+    health = health_init;
 
     // setting initial status of shot_fired
     shot_fired = 0;
@@ -85,14 +91,25 @@ class PlayerHandler : public MovingObject{
 
   /********** GETTERS **********/
   bool get_shot_fired(){ return shot_fired; }
+  bool get_flare_show(){ return flare_shown; }
+
+  float get_life(){ return health; }
+  float get_remaining_life_pct(){
+    return health / PLAYER_STARTING_HEALTH;
+  }
+
   /********** GETTERS **********/
+
+  /********** SETTERS **********/
+  void flip_shot_fired(){ shot_fired = !shot_fired; }
+  /********** SETTERS **********/
 
   /********** BUTTON PRESS CONTROLLERS **********/
   void push_forward(){ pushed[0] = 1; };
   void push_back(){ pushed[2] = 1; };
   void push_left(){ pushed[1] = 1; };
   void push_right(){ pushed[3] = 1; };
-  //  void push_space(){ shoot(); };
+  void push_space(){ shot_fired = 1; flare_shown = 200; };
 
   void release_forward(){ pushed[0] = 0; };
   void release_back(){ pushed[2] = 0; };
@@ -101,6 +118,10 @@ class PlayerHandler : public MovingObject{
   /********** BUTTON PRESS CONTROLLERS **********/
 
   void update(){
+    if(flare_shown > 0)
+      flare_shown--;
+    else;
+    
     process_friction();
     update_position();
     if(pushed[0]){
@@ -135,8 +156,22 @@ class PlayerHandler : public MovingObject{
     else;
   }
 
+  void register_hit(){
+    health -= PROJECTILE_STRENGTH;
+  }
+
+  void register_crash(){
+    health -= CRASH_DAMAGE;
+  }
+
+  bool vital_signs(){
+    if(health <= 0.0f)
+      return 0;
+    return 1;
+  }
+
   void bump(){
-    speed = -(speed * 0.1f);
+    speed = -(speed * 0.8f);
     update_position();
   }
 };

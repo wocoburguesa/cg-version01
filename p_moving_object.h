@@ -216,10 +216,4 @@ class MovingObject : public Object{
   virtual void update() = 0;
 };
 
-class C : public A{
- public:
-  C(){ cout <<  "construyendo C"  << endl; }
-  void print2(){ cout << "print2" << endl ;}
-};
-
 #endif

@@ -24,12 +24,15 @@ class MapHandler{
   /********** GETTERS **********/
   int get_buildings_count(){ return buildings.size(); }
   int get_enemies_count(){ return enemies.size(); }
+  int get_projectiles_count(){ return projectiles.size(); }
 
   StaticObject* get_building_by_idx(int idx){ return buildings[idx]; }
   Enemy* get_enemy_by_idx(int idx){ return enemies[idx]; }
+  Projectile* get_projectile_by_idx(int idx){ return projectiles[idx]; }
 
   vector<StaticObject*> get_buildings(){ return buildings; }
   vector<Enemy*> get_enemies(){ return enemies; }
+  vector<Projectile*> get_projectiles(){ return projectiles; }
   /********** GETTERS **********/
 
   /********** OBJECT CREATORS **********/
@@ -40,9 +43,9 @@ class MapHandler{
 
   void add_enemy_object(float x, float y, float max_speed,
 			float acceleration, float friction,
-			float size, float angle){
+			float size, float angle, float health){
     Enemy * new_enemy = new Enemy(x, y, max_speed, acceleration, friction,
-				  size, angle);
+				  size, angle, health);
     enemies.push_back(new_enemy);
   }
 
@@ -71,6 +74,10 @@ class MapHandler{
     slope = (a.second - b.second)/(a.first - b.first);
     intercept = a.second - slope * a.first;
     return POINT(slope, intercept);
+  }
+
+  bool point_in_line(POINT p, POINT l1, POINT l2){
+
   }
   /********** UTLILITY FUNCTIONS **********/
 
@@ -174,8 +181,10 @@ class MapHandler{
 	 (player->get_radius() + buildings[i]->get_radius())){
 	if(check_for_collision(player->get_corners(),
 			       buildings[i]->get_corners(),
-			       buildings[i]->get_equations()))
+			       buildings[i]->get_equations())){
 	  player->bump();
+	  player->register_crash();
+	}
       }
     }
 
@@ -197,8 +206,10 @@ class MapHandler{
 	 (player->get_radius() + enemies[i]->get_radius())){
 	if(check_for_collision(player->get_corners(),
 			       enemies[i]->get_corners(),
-			       enemies[i]->get_equations()))
+			       enemies[i]->get_equations())){
 	  player->bump();
+	  player->register_crash();
+	}
       }
     }
 
@@ -224,15 +235,90 @@ class MapHandler{
 	}
       }
   }
+
+  void check_projectile_collisions(){
+    for(int i = 0; i < projectiles.size();){
+      Projectile * current = projectiles[i];
+      for(int j = 0; j < enemies.size(); ++j){
+	if(distance(projectiles[i]->get_x_y(), enemies[j]->get_x_y()) <=
+	   (projectiles[i]->get_radius() + enemies[j]->get_radius())){
+	  if(check_for_collision(projectiles[i]->get_corners(),
+				 enemies[j]->get_corners(),
+				 enemies[j]->get_equations())){
+	    enemies[j]->register_hit();
+	    projectiles.erase(projectiles.begin()+i);
+	    delete current;
+	    break;
+	  }
+	}
+      }
+      if(current)
+	++i;
+    }
+
+    for(int i = 0; i < projectiles.size();){
+      Projectile * current = projectiles[i];
+      for(int j = 0; j < buildings.size(); ++j){
+	if(distance(projectiles[i]->get_x_y(), buildings[j]->get_x_y()) <=
+	   (projectiles[i]->get_radius() + buildings[j]->get_radius())){
+	  if(check_for_collision(projectiles[i]->get_corners(),
+				 buildings[j]->get_corners(),
+				 buildings[j]->get_equations())){
+	  cout << "wtf" << endl;
+	  projectiles.erase(projectiles.begin()+i);
+	  delete current;
+	  break;
+	  }
+	}
+      }
+      if(current)
+	++i;
+    }
+
+    for(int i = 0; i < projectiles.size();){
+      Projectile * current = projectiles[i];
+      if(distance(projectiles[i]->get_x_y(), player->get_x_y()) <=
+	 (projectiles[i]->get_radius() + player->get_radius())){
+	if(check_for_collision(projectiles[i]->get_corners(),
+			       player->get_corners(),
+			       player->get_equations())){
+	  player->register_hit();
+	  projectiles.erase(projectiles.begin()+i);
+	  delete current;
+	  break;
+	}
+      }
+      else;
+      if(current)
+	++i;
+    }
+  }
   /********** COLLISION DETECTORS **********/
+
+  /********** DEATH DETECTORS **********/
+  void check_for_dead_enemies(){
+    for(int i = 0; i < enemies.size();){
+      Enemy * current = enemies[i];
+      if(!current->vital_signs()){
+	enemies.erase(enemies.begin()+i);
+	delete current;
+      }
+      else
+	++i;
+    }
+  }
 
   void update(){
     check_moving_vs_static_collisions();
     check_moving_vs_moving_collisions();
+    check_projectile_collisions();
+    check_for_dead_enemies();
     player->update();
     for(int i = 0; i < enemies.size(); ++i){
       enemies[i]->go_to(POINT(8,0));
       enemies[i]->update();
     }
+    for(int i = 0; i < projectiles.size(); ++i)
+      projectiles[i]->update();
   }
 };
