@@ -15,21 +15,31 @@ NOTAS:
 #include "game_handler.h"
 #include "SOIL.h"
 
-#define UP 0
-#define LEFT 1
-#define DOWN 2
-#define RIGHT 3
+#define PLAYER_NORMAL 0
+#define PLAYER_FIRING 1
+#define ENEMY_NORMAL 2
+#define ENEMY_FIRING 3
+#define ENEMY_DAMAGE1 4
+#define ENEMY_DAMAGE1_FIRING 5
+#define ENEMY_DAMAGE2 6
+#define ENEMY_DAMAGE2_FIRING 7
+#define ENEMY_DAMAGE3 8
+#define ENEMY_DAMAGE3_FIRING 9
+#define BULLET 10
+#define FLOOR 11
 
 GameHandler * gamehan;
 PlayerHandler * playerhan;
 
 float camera_distance;
 
-GLuint textures[2];
+float game_over_billboard_distance;
+
+GLuint textures[12];
 
 int LoadGLTextures(){
   /* load an image file directly as a new OpenGL texture */
-  textures[0] = SOIL_load_OGL_texture
+  textures[PLAYER_NORMAL] = SOIL_load_OGL_texture
     (
      "textures/player_normal.bmp",
      SOIL_LOAD_AUTO,
@@ -37,7 +47,15 @@ int LoadGLTextures(){
      SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
      );
 
-  textures[1] = SOIL_load_OGL_texture
+  textures[PLAYER_FIRING] = SOIL_load_OGL_texture
+    (
+     "textures/player_firing.bmp",
+     SOIL_LOAD_AUTO,
+     SOIL_CREATE_NEW_ID,
+     SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
+     );
+
+  textures[ENEMY_NORMAL] = SOIL_load_OGL_texture
     (
      "textures/enemy_normal.bmp",
      SOIL_LOAD_AUTO,
@@ -45,39 +63,7 @@ int LoadGLTextures(){
      SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
      );
   
-  textures[2] = SOIL_load_OGL_texture
-    (
-     "textures/enemy_damage1.bmp",
-     SOIL_LOAD_AUTO,
-     SOIL_CREATE_NEW_ID,
-     SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
-     );
-  
-  textures[3] = SOIL_load_OGL_texture
-    (
-     "textures/enemy_damage2.bmp",
-     SOIL_LOAD_AUTO,
-     SOIL_CREATE_NEW_ID,
-     SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
-     );
-  
-  textures[4] = SOIL_load_OGL_texture
-    (
-     "textures/enemy_damage3.bmp",
-     SOIL_LOAD_AUTO,
-     SOIL_CREATE_NEW_ID,
-     SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
-     );
-  
-  textures[5] = SOIL_load_OGL_texture
-    (
-     "textures/player_firing.bmp",
-     SOIL_LOAD_AUTO,
-     SOIL_CREATE_NEW_ID,
-     SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
-     );
-  
-  textures[6] = SOIL_load_OGL_texture
+  textures[ENEMY_FIRING] = SOIL_load_OGL_texture
     (
      "textures/enemy_firing.bmp",
      SOIL_LOAD_AUTO,
@@ -85,15 +71,63 @@ int LoadGLTextures(){
      SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
      );
   
-  textures[7] = SOIL_load_OGL_texture
+  textures[ENEMY_DAMAGE1] = SOIL_load_OGL_texture
     (
-     "textures/bullet.bmp",
+     "textures/enemy_damage1.bmp",
      SOIL_LOAD_AUTO,
      SOIL_CREATE_NEW_ID,
      SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
      );
   
-  textures[8] = SOIL_load_OGL_texture
+  textures[ENEMY_DAMAGE1_FIRING] = SOIL_load_OGL_texture
+    (
+     "textures/enemy_damage1_firing.bmp",
+     SOIL_LOAD_AUTO,
+     SOIL_CREATE_NEW_ID,
+     SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
+     );
+  
+  textures[ENEMY_DAMAGE2] = SOIL_load_OGL_texture
+    (
+     "textures/enemy_damage2.bmp",
+     SOIL_LOAD_AUTO,
+     SOIL_CREATE_NEW_ID,
+     SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
+     );
+  
+  textures[ENEMY_DAMAGE2_FIRING] = SOIL_load_OGL_texture
+    (
+     "textures/enemy_damage2_firing.bmp",
+     SOIL_LOAD_AUTO,
+     SOIL_CREATE_NEW_ID,
+     SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
+     );
+  
+  textures[ENEMY_DAMAGE3] = SOIL_load_OGL_texture
+    (
+     "textures/enemy_damage3.bmp",
+     SOIL_LOAD_AUTO,
+     SOIL_CREATE_NEW_ID,
+     SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
+     );
+  
+  textures[ENEMY_DAMAGE3_FIRING] = SOIL_load_OGL_texture
+    (
+     "textures/enemy_damage3_firing.bmp",
+     SOIL_LOAD_AUTO,
+     SOIL_CREATE_NEW_ID,
+     SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
+     );
+  
+  textures[BULLET] = SOIL_load_OGL_texture
+    (
+     "textures/bullet_fire.bmp",
+     SOIL_LOAD_AUTO,
+     SOIL_CREATE_NEW_ID,
+     SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA
+     );
+  
+  textures[FLOOR] = SOIL_load_OGL_texture
     (
      "textures/floor.bmp",
      SOIL_LOAD_AUTO,
@@ -128,30 +162,35 @@ void changeSize(int w, int h) {
   glMatrixMode(GL_MODELVIEW);
 }
 
-void renderScene(void){
-  // Clear Color and Depth Buffers
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glMatrixMode(GL_MODELVIEW);
-  // Reset transformations
-  glLoadIdentity();
- 
-  gamehan->update();
-  float player_x = playerhan->get_x_y().first;
-  float player_y = playerhan->get_x_y().second;
-  pair<float, float> top_left = playerhan->get_top_left();
-  pair<float, float> bottom_left = playerhan->get_bottom_left();
-  pair<float, float> bottom_right = playerhan->get_bottom_right();
-  pair<float, float> top_right = playerhan->get_top_right();
-
-  // Set the camera
-  gluLookAt(player_x, player_y, camera_distance,
-	    player_x, player_y,  0.0f,
-	    0.0f, 1.0f,  0.0f);
-
-  //draw the floor
+void draw_player(){
   glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, textures[8]);
+  if(playerhan->get_flare_shown() > 0)
+    glBindTexture(GL_TEXTURE_2D, textures[PLAYER_FIRING]);
+  else
+    glBindTexture(GL_TEXTURE_2D, textures[PLAYER_NORMAL]);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  vector<POINT> corners = playerhan->get_corners();
+
+  glColor3f(1.0f, 1.0f, 1.0f);
+  glBegin(GL_QUADS);
+
+  glTexCoord2f(1.0f, 0.0f);
+  glVertex3f(corners[0].first, corners[0].second, 0.0f);        //top left
+  glTexCoord2f(0.0f, 0.0f);
+  glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
+  glTexCoord2f(0.0f, 1.0f);
+  glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
+  glTexCoord2f(1.0f, 1.0f);
+  glVertex3f(corners[3].first, corners[3].second, 0.0f);      //top right
+  glEnd();
+  glDisable(GL_TEXTURE_2D);
+}
+
+void draw_floor(){
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, textures[FLOOR]);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -168,30 +207,9 @@ void renderScene(void){
   glVertex3f(50.0f, 50.0f, 0.0f);        //top left
   glEnd();
   glDisable(GL_TEXTURE_2D);
+}
 
-  //draw player
-  glEnable(GL_TEXTURE_2D);
-  if(playerhan->get_flare_show() > 0)
-    glBindTexture(GL_TEXTURE_2D, textures[5]);
-  else
-    glBindTexture(GL_TEXTURE_2D, textures[0]);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-  glColor3f(1.0f, 1.0f, 1.0f);
-  glBegin(GL_QUADS);
-
-  glTexCoord2f(1.0f, 0.0f);
-  glVertex3f(top_left.first, top_left.second, 0.0f);        //top left
-  glTexCoord2f(0.0f, 0.0f);
-  glVertex3f(bottom_left.first, bottom_left.second, 0.0f);  //bottom left
-  glTexCoord2f(0.0f, 1.0f);
-  glVertex3f(bottom_right.first, bottom_right.second, 0.0f);//bottom right
-  glTexCoord2f(1.0f, 1.0f);
-  glVertex3f(top_right.first, top_right.second, 0.0f);      //top right
-  glEnd();
-  glDisable(GL_TEXTURE_2D);
-
+void draw_buildings(){
   MapHandler * maphan = gamehan->get_maphan();
   //draw static objects
 
@@ -203,7 +221,10 @@ void renderScene(void){
       glVertex3f(corners[j].first, corners[j].second, 0.0f);
     glEnd();
   }
+}
 
+void draw_enemies(){
+  MapHandler * maphan = gamehan->get_maphan();
   //draw moving objects (enemies)
   glEnable(GL_TEXTURE_2D);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -213,18 +234,28 @@ void renderScene(void){
   for(int i = 0; i < maphan->get_enemies_count(); ++i){
     Enemy * curr = maphan->get_enemy_by_idx(i);
     vector<POINT> corners = curr->get_corners();
-    if(curr->get_life() == 400.0f)
-      glBindTexture(GL_TEXTURE_2D, textures[1]);
-    else if(curr->get_life() == 300.0f)
-      glBindTexture(GL_TEXTURE_2D, textures[2]);
-    else if(curr->get_life() == 200.0f)
-      glBindTexture(GL_TEXTURE_2D, textures[3]);
-    else if(curr->get_life() == 100.0f)
-      glBindTexture(GL_TEXTURE_2D, textures[4]);
-    else;
+    if(curr->get_life() > 300.0f)
+      if(curr->get_flare_shown() > 0)
+	glBindTexture(GL_TEXTURE_2D, textures[ENEMY_FIRING]);
+      else
+	glBindTexture(GL_TEXTURE_2D, textures[ENEMY_NORMAL]);
+    else if(curr->get_life() > 200.0f)
+      if(curr->get_flare_shown() > 0)
+	glBindTexture(GL_TEXTURE_2D, textures[ENEMY_DAMAGE1_FIRING]);
+      else
+	glBindTexture(GL_TEXTURE_2D, textures[ENEMY_DAMAGE1]);
+    else if(curr->get_life() > 100.0f)
+      if(curr->get_flare_shown() > 0)
+	glBindTexture(GL_TEXTURE_2D, textures[ENEMY_DAMAGE2_FIRING]);
+      else
+	glBindTexture(GL_TEXTURE_2D, textures[ENEMY_DAMAGE2]);
+    else
+      if(curr->get_flare_shown() > 0)
+	glBindTexture(GL_TEXTURE_2D, textures[ENEMY_DAMAGE3_FIRING]);
+      else
+	glBindTexture(GL_TEXTURE_2D, textures[ENEMY_DAMAGE3]);
 
     glBegin(GL_QUADS);
-    //    for(int j = 0; j < corners.size(); ++j)
     glTexCoord2f(1.0f, 0.0f);
     glVertex3f(corners[0].first, corners[0].second, 0.0f);
     glTexCoord2f(0.0f, 0.0f);
@@ -236,10 +267,12 @@ void renderScene(void){
     glEnd();
   }
   glDisable(GL_TEXTURE_2D);
+}
 
-  //draw projectiles
+void draw_projectiles(){
+  MapHandler * maphan = gamehan->get_maphan();
   glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, textures[7]);
+  glBindTexture(GL_TEXTURE_2D, textures[BULLET]);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glColor3f(1.0f, 1.0f, 1.0f);
@@ -259,24 +292,33 @@ void renderScene(void){
     glEnd();
   }
   glDisable(GL_TEXTURE_2D);
+}
 
-  //draw lifebar
+void draw_lifebar(){
+  float player_x = playerhan->get_x_y().first;
+  float player_y = playerhan->get_x_y().second;
+
+  float life_left = playerhan->get_remaining_life_pct();
+
   float bottom = player_y - 2.5f;
-  float left = player_x - 2.5f;
-  float right = player_x - 2.0f;
-  float top = player_y - 2.5 + playerhan->get_remaining_life_pct() * 1.5f;
+  float left = player_x - 5.0f;
+  float right = player_x - 4.5f;
+  float top = player_y - 2.5f + life_left * 1.5f;
+  if(life_left < 0.0f)
+    top = player_y - 2.5f;
+  else;
   glColor3f(0.0f, 0.0f, 0.0f);
   glBegin(GL_QUADS);
 
-  glVertex3f(player_x-2.5, player_y-1, camera_distance-7);
-  glVertex3f(player_x-2.5, player_y-2.5, camera_distance-7);
-  glVertex3f(player_x-2, player_y-2.5, camera_distance-7);
-  glVertex3f(player_x-2, player_y-1, camera_distance-7);
+  glVertex3f(left, player_y-1, camera_distance-7);
+  glVertex3f(left, bottom, camera_distance-7);
+  glVertex3f(right, bottom, camera_distance-7);
+  glVertex3f(right, player_y-1, camera_distance-7);
   glEnd();
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-  glColor3f(0.0f, 1.0f, 0.0f);
+  glColor3f((1-life_left)*1.0f, life_left*1.0f, 0.0f);
   glBegin(GL_QUADS);
 
   glVertex3f(left, top, camera_distance-7);
@@ -285,6 +327,55 @@ void renderScene(void){
   glVertex3f(right, top, camera_distance-7);
   glEnd();
   glDisable(GL_BLEND);
+}
+
+void draw_lose_billboard(){
+  if(game_over_billboard_distance < 12.0f)
+    game_over_billboard_distance += 0.05f;
+  else;
+  float player_x = playerhan->get_x_y().first;
+  float player_y = playerhan->get_x_y().second;
+
+  glPushMatrix();
+  glRotatef(1.0f, 1.0f, 0.0f, 0.0f);
+  glBegin(GL_QUADS);
+  glVertex3f(-2.0f, 1.0f, camera_distance + 5.0f - game_over_billboard_distance);
+  glVertex3f(-2.0f, -1.0f, camera_distance + 5.0f - game_over_billboard_distance);
+  glVertex3f(2.0f, -1.0f, camera_distance + 5.0f - game_over_billboard_distance);
+  glVertex3f(2.0f, 1.0f, camera_distance + 5.0f - game_over_billboard_distance);
+  /*  glVertex3f(player_x-2.0f, player_y, camera_distance + 5.0f - game_over_billboard_distance);
+  glVertex3f(player_x, player_y-2.0f, camera_distance + 5.0f - game_over_billboard_distance);
+  glVertex3f(player_x+2.0f, player_y, camera_distance + 5.0f - game_over_billboard_distance);
+  glVertex3f(player_x, player_y+2.0f, camera_distance + 5.0f - game_over_billboard_distance);*/
+  glEnd();
+  glPopMatrix();
+}
+
+void renderScene(void){
+  // Clear Color and Depth Buffers
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glMatrixMode(GL_MODELVIEW);
+  // Reset transformations
+  glLoadIdentity();
+ 
+  float player_x = playerhan->get_x_y().first;
+  float player_y = playerhan->get_x_y().second;
+  // Set the camera
+  gluLookAt(player_x, player_y, camera_distance,
+	    player_x, player_y,  0.0f,
+	    0.0f, 1.0f,  0.0f);
+
+  gamehan->update();
+
+  draw_floor();
+  draw_player();
+  draw_buildings();
+  draw_enemies();
+  draw_projectiles();
+  draw_lifebar();
+  if(gamehan->check_game_condition() < 0)
+    draw_lose_billboard();
 
   glutSwapBuffers();
 }
@@ -292,6 +383,8 @@ void renderScene(void){
 void normal_key_handler(unsigned char key, int x, int y) {
   if (key == 27)
     exit(0);
+  if(gamehan->check_game_condition() != 0)
+    return;
   switch(key){
   case 'w' :
     playerhan->push_forward(); break;
@@ -348,6 +441,7 @@ void special_release_handler(int key, int x, int y) {
 }
 
 int main(int argc, char **argv) {
+  game_over_billboard_distance = 0.0f;
   camera_distance = 10.f;
 
   playerhan = new PlayerHandler(PLAYER_STARTING_X,
@@ -401,8 +495,8 @@ int main(int argc, char **argv) {
   // init GLUT and create window
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-  glutInitWindowPosition(10, 10);
-  glutInitWindowSize(320, 320);
+  glutInitWindowPosition(-1, -1);
+  glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
   glutCreateWindow("Carritos en acidos");
 
   LoadGLTextures();

@@ -29,24 +29,6 @@ class Object{
     return sqrt((a.first - b.first)*(a.first - b.first) +
 		(a.second - b.second)*(a.second - b.second));
   }
-
-
 };
-
-
-class A{
- protected:
-  int x;
- public:
-  A(){
-    cout <<  "construyendo A"  << endl;
-  }
-  void print(){
-    cout << "gay" << endl;
-  } 
-
-  virtual void print2() = 0;
-};
-
 
 #endif

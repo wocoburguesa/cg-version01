@@ -14,6 +14,7 @@ class PlayerHandler : public MovingObject{
   bool *pushed;
   bool shot_fired;
   int flare_shown;
+  int shot_cooldown;
 
  public:
   PlayerHandler(float x_init,
@@ -91,7 +92,7 @@ class PlayerHandler : public MovingObject{
 
   /********** GETTERS **********/
   bool get_shot_fired(){ return shot_fired; }
-  bool get_flare_show(){ return flare_shown; }
+  bool get_flare_shown(){ return flare_shown; }
 
   float get_life(){ return health; }
   float get_remaining_life_pct(){
@@ -109,7 +110,7 @@ class PlayerHandler : public MovingObject{
   void push_back(){ pushed[2] = 1; };
   void push_left(){ pushed[1] = 1; };
   void push_right(){ pushed[3] = 1; };
-  void push_space(){ shot_fired = 1; flare_shown = 200; };
+  void push_space(){ shot_fired = 1; flare_shown = FLARE_SHOWN_CONSTANT; };
 
   void release_forward(){ pushed[0] = 0; };
   void release_back(){ pushed[2] = 0; };

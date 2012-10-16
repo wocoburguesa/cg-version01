@@ -47,10 +47,4 @@ class StaticObject : public Object{
   }
 };
 
-class B : public A{
- public:
-  B(){ cout <<  "construyendo B"  << endl; }
-  void print2(){ cout << "print2" << endl ;}
-};
-
 #endif

@@ -15,8 +15,11 @@ class GameHandler{
   PlayerHandler * player;
   LifeBar * lifebar;
 
+  int game_condition;
+
  public:
   GameHandler(PlayerHandler * p){
+    game_condition = 0;
     maphan = new MapHandler();
     player = p;
     maphan->add_player(p);
@@ -25,6 +28,7 @@ class GameHandler{
 
   MapHandler* get_maphan(){ return maphan; };
   LifeBar* get_lifebar(){ return lifebar; };
+  int check_game_condition(){ return game_condition; };
 
   void spawn_building(vector<POINT> &corners){
     maphan->add_static_object(corners);
@@ -40,7 +44,7 @@ class GameHandler{
     float y = player->get_x_y().second - 1.0f;
     float angle = PLAYER_STARTING_ANGLE;
     maphan->add_enemy_object(x, y, max_speed, player->get_acceleration(),
-			     player->get_friction(), size, 0.0f,
+			     player->get_friction(), size, 180.0f,
 			     ENEMY_STARTING_HEALTH);
   }
 
@@ -62,6 +66,14 @@ class GameHandler{
   }
 
   void update(){
+    if(player->get_remaining_life_pct() <= 0.0f)
+      game_condition = -1;
+    else;
+    if(maphan->get_enemies_count() == 0)
+      game_condition = 1;
+    else;
+    if(game_condition != 0)
+      return;
     vector<Enemy*> enemies = maphan->get_enemies();
     for(int i = 0; i < enemies.size(); ++i){
       if(enemies[i]->get_shot_fired()){

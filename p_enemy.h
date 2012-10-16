@@ -16,6 +16,8 @@ class Enemy : public MovingObject{
 
   float health;
   bool shot_fired;
+  int flare_shown;
+  int shot_cooldown;
 
  public:
   Enemy(float x_init,
@@ -89,6 +91,7 @@ class Enemy : public MovingObject{
 
   /********** GETTERS **********/
   bool get_shot_fired(){ return shot_fired; }
+  bool get_flare_shown(){ return flare_shown;} 
   /********** GETTERS **********/
 
   /********** SETTERS **********/
@@ -96,32 +99,84 @@ class Enemy : public MovingObject{
   /********** SETTERS **********/
 
   void update(){
+    if(flare_shown > 0)
+      flare_shown--;
+    else;
+    if(shot_cooldown > 0)
+      shot_cooldown--;
+    else;
+    
     process_friction();
     update_position();
     if(in_transit){
       if(distance(POINT(x, y), destination) > 3.0f){
 	move_forward();
-	if(distance(mov_vector, target_vector) > 0.0001f){
-	  float current_slope = (destination.second - y)/(destination.first - x);
-	  if(abs(current_slope - (target_vector.second/target_vector.first)) >
-	     0.01f){
-	    float left_angle = angle + 0.05;
-	    float right_angle = angle - 0.05;
-	    if(distance(POINT(cos(left_angle*PI/180), sin(left_angle*PI/180)),
-			target_vector) <
-	       distance(POINT(cos(right_angle*PI/180), sin(right_angle*PI/180)),
-			target_vector))
+	float current_slope = (mov_vector.second)/(mov_vector.first);
+	float current_intercept = y - current_slope * x;
+	
+	float ortho_slope = - (1 / current_slope);
+	float ortho_intercept =
+	  destination.second - destination.first * ortho_slope;
+
+	float projection_x = (ortho_intercept - current_intercept)/
+	  (current_slope - ortho_slope);
+	float projection_y = current_slope * projection_x + current_intercept;
+
+	float distance_to_projection =
+	  distance(destination, POINT(projection_x, projection_y));
+
+	if(distance_to_projection > 0.001f){
+	  float left_angle = angle + 0.05f;
+	  POINT aux_vector =
+	    POINT(cos(left_angle*PI/180), sin(left_angle*PI/180));
+	  
+	  float aux_slope = (aux_vector.second)/(aux_vector.first);
+	  float aux_intercept = y - aux_slope * x;
+	
+	  float aux_ortho_slope = - (1 / aux_slope);
+	  float aux_ortho_intercept =
+	    destination.second - destination.first * aux_ortho_slope;
+
+	  float aux_projection_x = (aux_ortho_intercept - aux_intercept)/
+	    (aux_slope - aux_ortho_slope);
+	  float aux_projection_y =
+	    aux_slope * aux_projection_x + aux_intercept;
+
+	  float front_x = (corners[0].first + corners[3].first) / 2;
+	  float front_y = (corners[0].second + corners[3].second) / 2;
+
+	  if(distance(destination, POINT(front_x, front_y)) >
+	     distance(destination, POINT(x, y))){
+	    move_back();
+	    if(distance(destination, POINT(aux_projection_x, aux_projection_y)) >
+	       distance_to_projection)
 	      turn_left();
 	    else
 	      turn_right();
 	  }
+	  else{
+	    move_back();
+	    if(distance(destination, POINT(aux_projection_x, aux_projection_y)) >
+	       distance_to_projection)
+	      turn_right();
+	    else
+	      turn_left();
+	  }
 	}
+	else if(shot_cooldown <= 0)
+	  shoot();
       }
       else
 	in_transit = 0;
     }
     else if(speed > 0)
       move_back();
+  }
+
+  void shoot(){
+    shot_fired = 1;
+    shot_cooldown = ENEMY_SHOT_COOLDOWN;
+    flare_shown = FLARE_SHOWN_CONSTANT;
   }
 
   void register_hit(){

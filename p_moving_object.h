@@ -199,13 +199,13 @@ class MovingObject : public Object{
   }
 
   void turn_left(){
-    angle = (angle + 0.05);
+    angle = (angle + PLAYER_TURNING_SPEED);
     mov_vector.first = cos(angle*PI/180);
     mov_vector.second = sin(angle*PI/180);
   }
 
   void turn_right(){
-    angle = (angle - 0.05);
+    angle = (angle - PLAYER_TURNING_SPEED);
     mov_vector.first = cos(angle*PI/180);
     mov_vector.second = sin(angle*PI/180);
   }

@@ -1,5 +1,4 @@
 CC = g++
-CFLAGS = -Wall
 PROG = a
 
 SRCS = main.cpp
