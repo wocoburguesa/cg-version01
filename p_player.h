@@ -112,6 +112,7 @@ class PlayerHandler : public MovingObject{
   /********** SETTERS **********/
   void flip_shot_fired(){ shot_fired = !shot_fired; }
   void reset_uber_count(){ uber_hit_count = 0; uber_reset = UBER_RESET_CONSTANT;}
+  void reset_health(){ health = PLAYER_STARTING_HEALTH; }
   /********** SETTERS **********/
 
   /********** BUTTON PRESS CONTROLLERS **********/

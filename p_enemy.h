@@ -126,42 +126,27 @@ class Enemy : public MovingObject{
 	  distance(destination, POINT(projection_x, projection_y));
 
 	if(distance_to_projection > 0.001f){
-	  float left_angle = angle + 0.05f;
-	  POINT aux_vector =
-	    POINT(cos(left_angle*PI/180), sin(left_angle*PI/180));
+	  float intercept_left =
+	    corners[0].second - corners[0].first * current_slope;
+	  float intercept_right =
+	    corners[3].second - corners[3].first * current_slope;
+
+	  float projection_left_x = (ortho_intercept - intercept_left)/
+	    (current_slope - ortho_slope);
+	  float projection_left_y = current_slope * projection_left_x +
+	    intercept_left;
+	  float projection_right_x = (ortho_intercept - intercept_right)/
+	    (current_slope - ortho_slope);
+	  float projection_right_y = current_slope * projection_right_x +
+	    intercept_right;
+
+	  POINT left(projection_left_x, projection_left_y);
+	  POINT right(projection_right_x, projection_right_y);
 	  
-	  float aux_slope = (aux_vector.second)/(aux_vector.first);
-	  float aux_intercept = y - aux_slope * x;
-	
-	  float aux_ortho_slope = - (1 / aux_slope);
-	  float aux_ortho_intercept =
-	    destination.second - destination.first * aux_ortho_slope;
-
-	  float aux_projection_x = (aux_ortho_intercept - aux_intercept)/
-	    (aux_slope - aux_ortho_slope);
-	  float aux_projection_y =
-	    aux_slope * aux_projection_x + aux_intercept;
-
-	  float front_x = (corners[0].first + corners[3].first) / 2;
-	  float front_y = (corners[0].second + corners[3].second) / 2;
-
-	  if(distance(destination, POINT(front_x, front_y)) >
-	     distance(destination, POINT(x, y))){
-	    move_back();
-	    if(distance(destination, POINT(aux_projection_x, aux_projection_y)) >
-	       distance_to_projection)
-	      turn_left();
-	    else
-	      turn_right();
-	  }
-	  else{
-	    move_back();
-	    if(distance(destination, POINT(aux_projection_x, aux_projection_y)) >
-	       distance_to_projection)
-	      turn_right();
-	    else
-	      turn_left();
-	  }
+	  if(distance(destination, left) > distance(destination, right))
+	    turn_right();
+	  else
+	    turn_left();
 	}
 	else if(shot_cooldown <= 0)
 	  shoot();

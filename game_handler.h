@@ -29,6 +29,10 @@ class GameHandler{
   }
 
   void set_game(){
+    items_collected = 0;
+    game_condition = 0;
+    player->reset_health();
+
     vector<POINT> building;
     /********** MAP BOUNDS **********/
     building.push_back(pair<float, float>(-(MAP_WIDTH+1.0f),(MAP_WIDTH+1.0f)));

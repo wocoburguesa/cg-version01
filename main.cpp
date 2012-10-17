@@ -548,10 +548,13 @@ void normal_key_handler(unsigned char key, int x, int y) {
   if (key == 27)
     exit(0);
   if(gamehan->check_game_condition() != 0)
-    if(key == 13)
-      exit(0);
+    if(key == 13){
+      gamehan->set_game();
+      game_over_billboard_distance = 0.0f;      
+    }
     else
       return;
+
   switch(key){
   case 'w' :
     playerhan->push_forward(); break;

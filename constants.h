@@ -33,12 +33,12 @@ const float PROJECTILE_MAX_SPEED = 0.015f;
 const float PROJECTILE_ACCELERATION = 0.0f;
 const float PROJECTILE_SIZE = 0.1f;
 const float PROJECTILE_FRICTION = 0.0f;
-const float PROJECTILE_STRENGTH = 100.0f;
+const float PROJECTILE_STRENGTH = 30.0f;
 
 /********** MISC CONSTANTS **********/
 const float PI = 3.141592654f;
 const float TH = 30.0f;  //angle formed between the diagonal of the car and the front
-const float CRASH_DAMAGE = 100.0f;
+const float CRASH_DAMAGE = 10.0f;
 const float FLARE_SHOWN_CONSTANT = 50.0f;
 const float SCREEN_WIDTH = 1366;
 const float SCREEN_HEIGHT = 780;

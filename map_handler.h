@@ -46,6 +46,10 @@ class MapHandler{
 
   /********** SETTERS **********/
   void reset_pickup_status(){ register_pickup = 0; }
+  void reset_buildings(){ buildings.clear(); }
+  void reset_enemies(){ enemies.clear(); }
+  void reset_pickups(){ pickups.clear(); }
+  void reset_projectiles(){ projectiles.clear(); }
   /********** SETTERS **********/
 
   /********** OBJECT CREATORS **********/
