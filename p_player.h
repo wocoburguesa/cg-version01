@@ -16,6 +16,9 @@ class PlayerHandler : public MovingObject{
   int flare_shown;
   int shot_cooldown;
 
+  int uber_hit_count;
+  int uber_reset;
+
  public:
   PlayerHandler(float x_init,
 		float y_init,
@@ -53,6 +56,10 @@ class PlayerHandler : public MovingObject{
 
     // setting initial status of shot_fired
     shot_fired = 0;
+
+    // setting initial status of uber shot
+    uber_hit_count = 0;
+    uber_reset = UBER_RESET_CONSTANT;
 
     //setting initial status of pushed array
     pushed = new bool[4];
@@ -94,20 +101,22 @@ class PlayerHandler : public MovingObject{
   bool get_shot_fired(){ return shot_fired; }
   bool get_flare_shown(){ return flare_shown; }
 
+  int get_uber_hit_count(){ return uber_hit_count; }
+
   float get_life(){ return health; }
   float get_remaining_life_pct(){
     return health / PLAYER_STARTING_HEALTH;
   }
-
   /********** GETTERS **********/
 
   /********** SETTERS **********/
   void flip_shot_fired(){ shot_fired = !shot_fired; }
+  void reset_uber_count(){ uber_hit_count = 0; uber_reset = UBER_RESET_CONSTANT;}
   /********** SETTERS **********/
 
   /********** BUTTON PRESS CONTROLLERS **********/
-  void push_forward(){ pushed[0] = 1; };
-  void push_back(){ pushed[2] = 1; };
+  void push_forward(){ pushed[0] = 1; uber_hit_count++; };
+  void push_back(){ pushed[2] = 1; uber_hit_count++; };
   void push_left(){ pushed[1] = 1; };
   void push_right(){ pushed[3] = 1; };
   void push_space(){ shot_fired = 1; flare_shown = FLARE_SHOWN_CONSTANT; };
@@ -122,6 +131,13 @@ class PlayerHandler : public MovingObject{
     if(flare_shown > 0)
       flare_shown--;
     else;
+
+    if(uber_reset > 0)
+      uber_reset--;
+    else{
+      uber_reset = 10000;
+      uber_hit_count = 0;
+    }
     
     process_friction();
     update_position();
@@ -173,6 +189,8 @@ class PlayerHandler : public MovingObject{
 
   void bump(){
     speed = -(speed * 0.8f);
+    update_position();
+    update_position();
     update_position();
   }
 };

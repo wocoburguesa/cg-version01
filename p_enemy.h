@@ -195,6 +195,8 @@ class Enemy : public MovingObject{
     speed = -(speed * 0.4f);
     turn_left();
     update_position();
+    update_position();
+    update_position();
   }
 
   void go_to(POINT target){

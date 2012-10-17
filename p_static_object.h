@@ -9,8 +9,14 @@
 using namespace std;
 
 class StaticObject : public Object{
+ private:
+  bool pickup;
+  
  public:
-  StaticObject(vector< POINT > &c){
+  StaticObject(vector< POINT > &c, bool is_pickup){
+    // determining if it is a pickup item
+    pickup = is_pickup;
+    
     // setting the corners vector
     corners = c;
 
@@ -45,6 +51,8 @@ class StaticObject : public Object{
       }
     }
   }
+
+  bool is_pickup(){ return pickup; }
 };
 
 #endif

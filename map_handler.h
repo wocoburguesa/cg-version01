@@ -14,19 +14,28 @@ using namespace std;
 class MapHandler{
  private:
   vector<StaticObject*> buildings;
+  vector<StaticObject*> pickups;
   vector<Enemy*> enemies;
   vector<Projectile*> projectiles;
   PlayerHandler * player;
 
+  bool register_pickup;
+
  public:
-  MapHandler(){};
+  MapHandler(){
+    register_pickup = 0;
+  };
 
   /********** GETTERS **********/
   int get_buildings_count(){ return buildings.size(); }
+  int get_pickups_count(){ return pickups.size(); }
   int get_enemies_count(){ return enemies.size(); }
   int get_projectiles_count(){ return projectiles.size(); }
 
+  bool check_for_pickup(){ return register_pickup; }
+
   StaticObject* get_building_by_idx(int idx){ return buildings[idx]; }
+  StaticObject* get_pickup_by_idx(int idx){ return pickups[idx]; }
   Enemy* get_enemy_by_idx(int idx){ return enemies[idx]; }
   Projectile* get_projectile_by_idx(int idx){ return projectiles[idx]; }
 
@@ -35,11 +44,34 @@ class MapHandler{
   vector<Projectile*> get_projectiles(){ return projectiles; }
   /********** GETTERS **********/
 
+  /********** SETTERS **********/
+  void reset_pickup_status(){ register_pickup = 0; }
+  /********** SETTERS **********/
+
   /********** OBJECT CREATORS **********/
-  void add_static_object(vector< pair<float, float> > &c){
-    StaticObject * new_building = new StaticObject(c);
-    buildings.push_back(new_building);
+  void add_static_object(vector< pair<float, float> > &c, bool is_pickup){
+    StaticObject * new_object = new StaticObject(c, is_pickup);
+    if(is_pickup)
+      pickups.push_back(new_object);
+    else
+      buildings.push_back(new_object);
   }
+
+  void add_pickup(MovingObject * dropper){
+    POINT center = dropper->get_x_y();
+    vector<POINT> corners;
+    corners.push_back(pair<float, float>(center.first-PICKUP_SIZE,
+					 center.second+PICKUP_SIZE));
+    corners.push_back(pair<float, float>(center.first-PICKUP_SIZE,
+					 center.second-PICKUP_SIZE));
+    corners.push_back(pair<float, float>(center.first+PICKUP_SIZE,
+					 center.second-PICKUP_SIZE));
+    corners.push_back(pair<float, float>(center.first+PICKUP_SIZE,
+					 center.second+PICKUP_SIZE));
+
+    add_static_object(corners, 1);
+  }
+
 
   void add_enemy_object(float x, float y, float max_speed,
 			float acceleration, float friction,
@@ -293,13 +325,35 @@ class MapHandler{
 	++i;
     }
   }
-  /********** COLLISION DETECTORS **********/
+
+  void check_player_pickups(){
+    for(int i = 0; i < pickups.size(); ){
+      StaticObject * current = pickups[i];
+      if(distance(player->get_x_y(), pickups[i]->get_x_y()) <=
+	 (player->get_radius() + pickups[i]->get_radius())){
+	if(check_for_collision(player->get_corners(),
+			       pickups[i]->get_corners(),
+			       pickups[i]->get_equations())){
+	  cout << "chau" << endl;
+	  pickups.erase(pickups.begin()+i);
+	  register_pickup = 1;
+	  delete current;
+	  break;
+	}
+      }
+      else;
+      if(current)
+	++i;
+    }
+  }  
+ /********** COLLISION DETECTORS **********/
 
   /********** DEATH DETECTORS **********/
   void check_for_dead_enemies(){
     for(int i = 0; i < enemies.size();){
       Enemy * current = enemies[i];
       if(!current->vital_signs()){
+	add_pickup(current);
 	enemies.erase(enemies.begin()+i);
 	delete current;
       }
@@ -308,11 +362,13 @@ class MapHandler{
     }
   }
 
+ 
   void update(){
     check_moving_vs_static_collisions();
     check_moving_vs_moving_collisions();
     check_projectile_collisions();
     check_for_dead_enemies();
+    check_player_pickups();
     player->update();
     for(int i = 0; i < enemies.size(); ++i){
       enemies[i]->update();
