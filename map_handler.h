@@ -234,6 +234,17 @@ class MapHandler{
 	    enemies[i]->bump();
 	}
       }
+
+    for(int i = 0; i < enemies.size(); ++i)
+      for(int j = 0; j < buildings.size(); ++j){
+	if(distance(enemies[i]->get_x_y(), buildings[j]->get_x_y()) <=
+	   (enemies[i]->get_radius() + buildings[j]->get_radius())){
+	  if(check_for_collision(enemies[i]->get_corners(),
+				 buildings[j]->get_corners(),
+				 buildings[j]->get_equations()))
+	    enemies[i]->bump();
+	}
+      }
   }  
   
   void check_moving_vs_moving_collisions(){

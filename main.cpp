@@ -243,6 +243,7 @@ void draw_buildings(){
   for(int i = 0; i < maphan->get_buildings_count(); ++i){
     StaticObject * curr = maphan->get_building_by_idx(i);
     vector<POINT> corners = curr->get_corners();
+    glColor3f(0.9f, 0.9f, 0.9f);
     glBegin(GL_QUADS);
     for(int j = 0; j < corners.size(); ++j)
       glVertex3f(corners[j].first, corners[j].second, 0.0f);
@@ -252,6 +253,8 @@ void draw_buildings(){
 
 void draw_pickups(){
   MapHandler * maphan = gamehan->get_maphan();
+
+  glColor3f(1.0f, 1.0f, 1.0f);
 
   for(int i = 0; i < maphan->get_pickups_count(); ++i){
     StaticObject * curr = maphan->get_pickup_by_idx(i);
@@ -287,6 +290,7 @@ void draw_enemies(){
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
   
+  glColor3f(1.0f, 1.0f, 1.0f);
   for(int i = 0; i < maphan->get_enemies_count(); ++i){
     Enemy * curr = maphan->get_enemy_by_idx(i);
     vector<POINT> corners = curr->get_corners();
@@ -342,7 +346,7 @@ void draw_projectiles(){
   glBindTexture(GL_TEXTURE_2D, textures[BULLET]);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glColor3f(1.0f, 1.0f, 1.0f);
+  glColor3f(1.0f, 0.56863f, 0.0f);
   
   for(int i = 0; i < maphan->get_projectiles_count(); ++i){
     Projectile * curr = maphan->get_projectile_by_idx(i);
@@ -457,9 +461,10 @@ void draw_item_counter(int items){
   //draw mask for alpha blending
   draw_mask(ZERO_OF_SEVEN+(items*2), corners, camera_distance-7.0f, 1);
   
-  glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+  glBlendFunc(GL_ONE,GL_ONE);
   glBindTexture(GL_TEXTURE_2D, textures[ZERO_OF_SEVEN+(items*2)+1]);
   
+  glColor3f(1.0f, 1.0f, 1.0f);
   glBegin(GL_QUADS);
   glTexCoord2f(0.0f, 0.0f);
   glVertex3f(corners[0].first, corners[0].second, camera_distance-7.0f);
@@ -627,44 +632,6 @@ int main(int argc, char **argv) {
   gamehan = new GameHandler(playerhan);
 
   gamehan->set_game();
-
-  /*  gamehan->spawn_enemy();
-
-  vector< pair<float, float> > building;
-  building.push_back(pair<float, float>(5,3));
-  building.push_back(pair<float, float>(5,-3));
-  building.push_back(pair<float, float>(11,-3));
-  building.push_back(pair<float, float>(11,3));
-  gamehan->spawn_building(building);
-  building.clear();
-
-  building.push_back(pair<float, float>(-51,51));
-  building.push_back(pair<float, float>(-51,-51));
-  building.push_back(pair<float, float>(-50,-51));
-  building.push_back(pair<float, float>(-50,51));
-  gamehan->spawn_building(building);
-  building.clear();
-
-  building.push_back(pair<float, float>(-50,-50));
-  building.push_back(pair<float, float>(-50,-51));
-  building.push_back(pair<float, float>(51,-51));
-  building.push_back(pair<float, float>(51,-50));
-  gamehan->spawn_building(building);
-  building.clear();
-
-  building.push_back(pair<float, float>(50,51));
-  building.push_back(pair<float, float>(50,-50));
-  building.push_back(pair<float, float>(51,-50));
-  building.push_back(pair<float, float>(51,51));
-  gamehan->spawn_building(building);
-  building.clear();
-
-  building.push_back(pair<float, float>(-50,51));
-  building.push_back(pair<float, float>(-50,50));
-  building.push_back(pair<float, float>(50,50));
-  building.push_back(pair<float, float>(50,51));
-  gamehan->spawn_building(building);
-  building.clear();*/
 
   // init GLUT and create window
   glutInit(&argc, argv);

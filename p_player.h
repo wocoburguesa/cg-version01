@@ -113,6 +113,12 @@ class PlayerHandler : public MovingObject{
   void flip_shot_fired(){ shot_fired = !shot_fired; }
   void reset_uber_count(){ uber_hit_count = 0; uber_reset = UBER_RESET_CONSTANT;}
   void reset_health(){ health = PLAYER_STARTING_HEALTH; }
+  void set_x_y(POINT new_x_y){ x = new_x_y.first; y=new_x_y.second; }
+  void set_angle(float new_angle){
+    angle = new_angle;
+    mov_vector = POINT(cos(angle*PI/180),
+		       sin(angle*PI/180));
+  }
   /********** SETTERS **********/
 
   /********** BUTTON PRESS CONTROLLERS **********/
@@ -175,7 +181,7 @@ class PlayerHandler : public MovingObject{
   }
 
   void register_hit(){
-    health -= PROJECTILE_STRENGTH;
+    health -= PROJECTILE_STRENGTH/3.0f;
   }
 
   void register_crash(){

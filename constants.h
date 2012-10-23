@@ -10,12 +10,12 @@ using namespace std;
 const float PLAYER_STARTING_X = 0.0f;
 const float PLAYER_STARTING_Y = 0.0f;
 const float PLAYER_MAX_SPEED = 0.01f;
-const float PLAYER_ACCELERATION = 0.00001f;
+const float PLAYER_ACCELERATION = 0.00003f;
 const float PLAYER_FRICTION = 0.000005f;
 const float PLAYER_SIZE = 1.154700538f;
 const float PLAYER_STARTING_ANGLE = 90.0;
 const float PLAYER_STARTING_HEALTH = 1000.0f;
-const float PLAYER_TURNING_SPEED = 0.5f;
+const float PLAYER_TURNING_SPEED = 0.6f;
 const int PLAYER_UBER_HIT_TARGET = 10;
 const int UBER_RESET_CONSTANT = 500;
 
@@ -28,12 +28,12 @@ const float ENEMY_STARTING_HEALTH = PLAYER_STARTING_HEALTH * 0.4f;
 const float ENEMY_SHOT_COOLDOWN = 300.0f;
 
 /********** PROJECTILE CONSTANTS **********/
-const float PROJECTILE_BASE_SPEED = 0.015f;
-const float PROJECTILE_MAX_SPEED = 0.015f;
+const float PROJECTILE_BASE_SPEED = 0.02f;
+const float PROJECTILE_MAX_SPEED = 0.02f;
 const float PROJECTILE_ACCELERATION = 0.0f;
-const float PROJECTILE_SIZE = 0.1f;
+const float PROJECTILE_SIZE = 0.12f;
 const float PROJECTILE_FRICTION = 0.0f;
-const float PROJECTILE_STRENGTH = 30.0f;
+const float PROJECTILE_STRENGTH = 100.0f;
 
 /********** MISC CONSTANTS **********/
 const float PI = 3.141592654f;

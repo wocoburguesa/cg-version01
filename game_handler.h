@@ -10,10 +10,8 @@ using namespace std;
 
 class GameHandler{
  private:
-  float friction;
   MapHandler * maphan;
   PlayerHandler * player;
-  LifeBar * lifebar;
 
   int items_collected;
   int game_condition;
@@ -25,13 +23,19 @@ class GameHandler{
     maphan = new MapHandler();
     player = p;
     maphan->add_player(p);
-    lifebar = new LifeBar(p);
   }
 
   void set_game(){
+    maphan->reset_pickup_status();
+    maphan->reset_buildings();
+    maphan->reset_enemies();
+    maphan->reset_pickups();
+    maphan->reset_projectiles();
     items_collected = 0;
     game_condition = 0;
     player->reset_health();
+    player->set_x_y(POINT(PLAYER_STARTING_X, PLAYER_STARTING_Y));
+    player->set_angle(PLAYER_STARTING_ANGLE);
 
     vector<POINT> building;
     /********** MAP BOUNDS **********/
@@ -101,7 +105,6 @@ class GameHandler{
   }
 
   MapHandler* get_maphan(){ return maphan; };
-  LifeBar* get_lifebar(){ return lifebar; };
   int check_game_condition(){ return game_condition; };
 
   int get_items_collected(){ return items_collected; };
@@ -193,16 +196,14 @@ class GameHandler{
     }
    else;
 
-   cout << player->get_uber_hit_count() << endl;
    if(player->get_uber_hit_count() >= PLAYER_UBER_HIT_TARGET){
-     cout << "heyo" << endl;
      spawn_projectile(player, 45.0f);
      spawn_projectile(player, 90.0f);
      spawn_projectile(player, 135.0f);
      spawn_projectile(player, 180.0f);
-     spawn_projectile(player, 215.0f);
-     spawn_projectile(player, 260.0f);
-     spawn_projectile(player, 305.0f);
+     spawn_projectile(player, 225.0f);
+     spawn_projectile(player, 270.0f);
+     spawn_projectile(player, 315.0f);
      spawn_projectile(player, 360.0f);
      player->reset_uber_count();
     }
