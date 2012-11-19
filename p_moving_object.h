@@ -113,8 +113,13 @@ class MovingObject : public Object{
     set_top_right();
     set_bottom_left();
     set_bottom_right();
+    /*    cout << "Center: (" << center.x << ", " << center.y << ", " << center.z << ")" << endl;
+    for(int i = 0; i < 8; ++i)
+    cout << "Corner #" << i << ": (" << corners[i].x << ", " << corners[i].y << ", " << corners[i].z << ")" << endl;*/
   }
 
+  // NEW ON UPDATE: all of these need checking on direction, probably wont work
+  // when there is inclination
   void set_top_left(){
     float ang = (steer_angle + TOP_ANGLE);
     POINT direction(cos(ang*PI/180.0f), sin(ang*PI/180.0f));
@@ -124,15 +129,15 @@ class MovingObject : public Object{
     float factor = radius / denom;
 
     // going 3D
-    float z_diff = radius * (cos(TOP_ANGLE*PI/180) / sin(TOP_ANGLE*PI/180));
+    float z_diff = radius * (cos(TOP_ANGLE*PI/180) / sin(TOP_ANGLE*PI/180)) / 2.0f;
     
     corners[0].x = center.x + (direction.first * factor);
     corners[0].y = center.y + (direction.second * factor);
-    corners[0].z = center.z - z_diff;
+    corners[0].z = center.z + z_diff;
 
     corners[4].x = center.x + (direction.first * factor);
     corners[4].y = center.y + (direction.second * factor);
-    corners[4].z = center.z + z_diff;
+    corners[4].z = center.z - z_diff;
   }
 
   void set_top_right(){
@@ -144,15 +149,15 @@ class MovingObject : public Object{
     float factor = radius / denom;
 
     // going 3D
-    float z_diff = radius * (cos(TOP_ANGLE*PI/180) / sin(TOP_ANGLE*PI/180));
+    float z_diff = radius * (cos(TOP_ANGLE*PI/180) / sin(TOP_ANGLE*PI/180)) / 2.0f;
     
     corners[3].x = center.x + (direction.first * factor);
     corners[3].y = center.y + (direction.second * factor);
-    corners[3].z = center.z - z_diff;
+    corners[3].z = center.z + z_diff;
 
     corners[7].x = center.x + (direction.first * factor);
     corners[7].y = center.y + (direction.second * factor);
-    corners[7].z = center.z + z_diff;
+    corners[7].z = center.z - z_diff;
   }
 
   void set_bottom_left(){
@@ -164,15 +169,15 @@ class MovingObject : public Object{
     float factor = radius / denom;
 
     // going 3D
-    float z_diff = radius * (cos(TOP_ANGLE*PI/180) / sin(TOP_ANGLE*PI/180));
-    
+    float z_diff = radius * (cos(TOP_ANGLE*PI/180) / sin(TOP_ANGLE*PI/180)) / 2.0f;
+
     corners[1].x = center.x + (direction.first * factor);
     corners[1].y = center.y + (direction.second * factor);
-    corners[1].z = center.z - z_diff;
+    corners[1].z = center.z + z_diff;
 
     corners[5].x = center.x + (direction.first * factor);
     corners[5].y = center.y + (direction.second * factor);
-    corners[5].z = center.z + z_diff;
+    corners[5].z = center.z - z_diff;
   }
 
   void set_bottom_right(){
@@ -184,15 +189,15 @@ class MovingObject : public Object{
     float factor = radius / denom;
 
     // going 3D
-    float z_diff = radius * (cos(TOP_ANGLE*PI/180) / sin(TOP_ANGLE*PI/180));
+    float z_diff = radius * (cos(TOP_ANGLE*PI/180) / sin(TOP_ANGLE*PI/180)) / 2.0f;
     
     corners[2].x = center.x + (direction.first * factor);
     corners[2].y = center.y + (direction.second * factor);
-    corners[2].z = center.z - z_diff;
+    corners[2].z = center.z + z_diff;
 
     corners[6].x = center.x + (direction.first * factor);
     corners[6].y = center.y + (direction.second * factor);
-    corners[6].z = center.z + z_diff;
+    corners[6].z = center.z - z_diff;
   }
 
   void process_friction(){
@@ -202,22 +207,20 @@ class MovingObject : public Object{
       speed += current_friction;
   }
 
-  // NEW ON UPDATE: need to check this function
-  /*  void update_position(){
-    float denom = sqrt(mov_vector.first*mov_vector.first +
-		       mov_vector.second*mov_vector.second);
+  void update_position(){
+    // NEW ON UPDATE: check that it works with inclination (probably not)
+    float denom = sqrt(mov_vector.x*mov_vector.x +
+		       mov_vector.y*mov_vector.y);
     float factor = speed / denom;
-    x += mov_vector.first * factor;
-    y += mov_vector.second * factor;
+    center.x += mov_vector.x * factor;
+    center.y += mov_vector.y * factor;
     
     // update corners
-    set_top_left();
-    set_bottom_left();
-    set_bottom_right();
-    set_top_right();
+    set_corners();
 
     // update equations
-    for(int i = 0; i < corners.size(); ++i){
+    // NEW ON UPDATE: needs updating
+    /*    for(int i = 0; i < corners.size(); ++i){
       float slope, intercept, x1, y1, x2, y2;
       x1 = corners[i].first;
       y1 = corners[i].second;
@@ -231,13 +234,13 @@ class MovingObject : public Object{
       else{
 	equations[i] = pair<float, float>(x1, INF);
       }
-    }
     }*/
+  }
   /********** UPDATERS **********/
 
   /********** MOVEMENT HANDLERS **********/
   // NEW ON UPDATE: all of this needs updating to 3d
-  /*  void move_forward(){
+  void move_forward(){
     if(speed < max_speed)
       speed += acceleration;
     else;
@@ -252,16 +255,16 @@ class MovingObject : public Object{
   }
 
   void turn_left(){
-    angle = (angle + PLAYER_TURNING_SPEED);
-    mov_vector.first = cos(angle*PI/180);
-    mov_vector.second = sin(angle*PI/180);
+    steer_angle += PLAYER_TURNING_SPEED;
+    mov_vector.x = cos(steer_angle*PI/180);
+    mov_vector.y = sin(steer_angle*PI/180);
   }
 
   void turn_right(){
-    angle = (angle - PLAYER_TURNING_SPEED);
-    mov_vector.first = cos(angle*PI/180);
-    mov_vector.second = sin(angle*PI/180);
-    }*/
+    steer_angle -= PLAYER_TURNING_SPEED;
+    mov_vector.x = cos(steer_angle*PI/180);
+    mov_vector.y = sin(steer_angle*PI/180);
+  }
 
   // virtual void bump() = 0;
   /********** MOVEMENT HANDLERS **********/

@@ -215,9 +215,9 @@ class GameHandler{
      spawn_projectile(player, 360.0f);
      player->reset_uber_count();
     }
-   else;
+    else;*/
 
-   maphan->update();*/
+   maphan->update();
   }
 
 };

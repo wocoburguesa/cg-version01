@@ -204,57 +204,58 @@ void draw_player(){
 
   glColor3f(1.0f, 0.0f, 0.0f);
 
-  glBegin(GL_POLYGON);
- 
-  glColor3f( 1.0, 0.0, 0.0 );     glVertex3f(  0.5, -0.5, -0.5 );
-  glColor3f( 0.0, 1.0, 0.0 );     glVertex3f(  0.5,  0.5, -0.5 );
-  glColor3f( 0.0, 0.0, 1.0 );     glVertex3f( -0.5,  0.5, -0.5 );
-  glColor3f( 1.0, 0.0, 1.0 );     glVertex3f( -0.5, -0.5, -0.5 );
- 
+  glBegin(GL_QUADS);
+  // Top
+  glColor3f(0.0f, 1.0f, 0.0f);
+  glVertex3f(corners[0].x, corners[0].y, corners[0].z);
+  glVertex3f(corners[1].x, corners[1].y, corners[1].z);
+  glVertex3f(corners[2].x, corners[2].y, corners[2].z);
+  glVertex3f(corners[3].x, corners[3].y, corners[3].z);
   glEnd();
 
-  glBegin(GL_POLYGON);
-  glColor3f(   1.0,  1.0, 1.0 );
-  glVertex3f(  0.5, -0.5, 0.5 );
-  glVertex3f(  0.5,  0.5, 0.5 );
-  glVertex3f( -0.5,  0.5, 0.5 );
-  glVertex3f( -0.5, -0.5, 0.5 );
+  glBegin(GL_QUADS);
+  // Back
+  glColor3f(1.0f, 0.0f, 0.0f);
+  glVertex3f(corners[1].x, corners[1].y, corners[1].z);
+  glVertex3f(corners[5].x, corners[5].y, corners[5].z);
+  glVertex3f(corners[6].x, corners[6].y, corners[6].z);
+  glVertex3f(corners[2].x, corners[2].y, corners[2].z);
   glEnd();
- 
-  // Purple side - RIGHT
-  glBegin(GL_POLYGON);
-  glColor3f(  1.0,  0.0,  1.0 );
-  glVertex3f( 0.5, -0.5, -0.5 );
-  glVertex3f( 0.5,  0.5, -0.5 );
-  glVertex3f( 0.5,  0.5,  0.5 );
-  glVertex3f( 0.5, -0.5,  0.5 );
+
+  glBegin(GL_QUADS);
+  // Front
+  glColor3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(corners[4].x, corners[4].y, corners[4].z);
+  glVertex3f(corners[0].x, corners[0].y, corners[0].z);
+  glVertex3f(corners[3].x, corners[3].y, corners[3].z);
+  glVertex3f(corners[7].x, corners[7].y, corners[7].z);
   glEnd();
- 
-  // Green side - LEFT
-  glBegin(GL_POLYGON);
-  glColor3f(   0.0,  1.0,  0.0 );
-  glVertex3f( -0.5, -0.5,  0.5 );
-  glVertex3f( -0.5,  0.5,  0.5 );
-  glVertex3f( -0.5,  0.5, -0.5 );
-  glVertex3f( -0.5, -0.5, -0.5 );
+
+  glBegin(GL_QUADS);
+  // Left
+  glColor3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(corners[0].x, corners[0].y, corners[0].z);
+  glVertex3f(corners[4].x, corners[4].y, corners[4].z);
+  glVertex3f(corners[5].x, corners[5].y, corners[5].z);
+  glVertex3f(corners[1].x, corners[1].y, corners[1].z);
   glEnd();
- 
-  // Blue side - TOP
-  glBegin(GL_POLYGON);
-  glColor3f(   0.0,  0.0,  1.0 );
-  glVertex3f(  0.5,  0.5,  0.5 );
-  glVertex3f(  0.5,  0.5, -0.5 );
-  glVertex3f( -0.5,  0.5, -0.5 );
-  glVertex3f( -0.5,  0.5,  0.5 );
+
+  glBegin(GL_QUADS);
+  // Right
+  glColor3f(1.0f, 0.0f, 0.0f);
+  glVertex3f(corners[2].x, corners[2].y, corners[2].z);
+  glVertex3f(corners[6].x, corners[6].y, corners[6].z);
+  glVertex3f(corners[7].x, corners[7].y, corners[7].z);
+  glVertex3f(corners[3].x, corners[3].y, corners[3].z);
   glEnd();
- 
-  // Red side - BOTTOM
-  glBegin(GL_POLYGON);
-  glColor3f(   1.0,  0.0,  0.0 );
-  glVertex3f(  0.5, -0.5, -0.5 );
-  glVertex3f(  0.5, -0.5,  0.5 );
-  glVertex3f( -0.5, -0.5,  0.5 );
-  glVertex3f( -0.5, -0.5, -0.5 );
+
+  glBegin(GL_QUADS);
+  // Bottom
+  glColor3f(1.0f, 1.0f, 1.0f);
+  glVertex3f(corners[7].x, corners[7].y, corners[7].z);
+  glVertex3f(corners[6].x, corners[6].y, corners[6].z);
+  glVertex3f(corners[5].x, corners[5].y, corners[5].z);
+  glVertex3f(corners[4].x, corners[4].y, corners[4].z);
   glEnd();
 
 /*  glDisable(GL_TEXTURE_2D);
@@ -572,14 +573,14 @@ void renderScene(void){
   float player_y = playerhan->get_center().y;
   float player_z = playerhan->get_center().z;
   // Set the camera
-  gluLookAt(player_x, player_y, camera_distance,
-	    player_x, player_y,  0.0f,
-	    0.0f, 1.0f,  0.0f);
+  gluLookAt(player_x, player_y-2.0f, camera_distance-3.0f, // camera pos
+	    player_x, player_y,  0.0f, // point to look
+	    0.0f, 0.5f, 0.0f); // up vector
 
   draw_player();
-  /*  gamehan->update();
+  gamehan->update();
 
-  draw_floor();
+    /*  draw_floor();
   draw_player();
   draw_buildings();
   draw_enemies();
@@ -679,9 +680,9 @@ int main(int argc, char **argv) {
 				0.0f,
 				0.0f,
 				PLAYER_STARTING_HEALTH);
-  /*  gamehan = new GameHandler(playerhan);
+  gamehan = new GameHandler(playerhan);
 
-      gamehan->set_game();*/
+  /*    gamehan->set_game();*/
 
   // init GLUT and create window
   glutInit(&argc, argv);

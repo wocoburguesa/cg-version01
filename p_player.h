@@ -134,7 +134,7 @@ class PlayerHandler : public MovingObject{
   /********** BUTTON PRESS CONTROLLERS **********/
 
   // NEW ON UPDATE: needs updating
-  /*  void update(){
+  void update(){
     if(flare_shown > 0)
       flare_shown--;
     else;
@@ -177,8 +177,8 @@ class PlayerHandler : public MovingObject{
 	turn_left();
       else
 	turn_right();
-    else;
-    }*/
+	else;
+  }
 
   void register_hit(){
     health -= PROJECTILE_STRENGTH/3.0f;

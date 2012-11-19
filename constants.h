@@ -1,7 +1,7 @@
 #include "utils.h"
 
 #define INF 0xffffffff
-#define POINT pair<int, int>
+#define POINT pair<float, float>
 
 using namespace std;
 

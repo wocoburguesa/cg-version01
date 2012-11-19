@@ -381,18 +381,19 @@ class MapHandler{
 
  
   // NEW ON UPDATE: needs updating
-  /* void update(){
-    check_moving_vs_static_collisions();
+  void update(){
+     /* check_moving_vs_static_collisions();
     check_moving_vs_moving_collisions();
     check_projectile_collisions();
     check_for_dead_enemies();
     check_player_pickups();
-    player->update();
     for(int i = 0; i < enemies.size(); ++i){
       enemies[i]->update();
       enemies[i]->go_to(player->get_x_y());
     }
     for(int i = 0; i < projectiles.size(); ++i)
-      projectiles[i]->update();
-      }*/
+    projectiles[i]->update();*/
+    player->update();
+
+    }
 };
