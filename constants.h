@@ -1,5 +1,7 @@
-#define POINT pair<float, float>
+#include "utils.h"
+
 #define INF 0xffffffff
+#define POINT pair<int, int>
 
 using namespace std;
 
@@ -9,6 +11,7 @@ using namespace std;
 /********** PLAYER CONSTANTS **********/
 const float PLAYER_STARTING_X = 0.0f;
 const float PLAYER_STARTING_Y = 0.0f;
+const float PLAYER_STARTING_Z = 0.0f;
 const float PLAYER_MAX_SPEED = 0.01f;
 const float PLAYER_ACCELERATION = 0.00003f;
 const float PLAYER_FRICTION = 0.000005f;
@@ -37,7 +40,8 @@ const float PROJECTILE_STRENGTH = 100.0f;
 
 /********** MISC CONSTANTS **********/
 const float PI = 3.141592654f;
-const float TH = 30.0f;  //angle formed between the diagonal of the car and the front
+const float TOP_ANGLE = 30.0f;  //angle formed between the diagonal of the car and the front
+const float FRONT_ANGLE = 30.0f;
 const float CRASH_DAMAGE = 10.0f;
 const float FLARE_SHOWN_CONSTANT = 50.0f;
 const float SCREEN_WIDTH = 1366;

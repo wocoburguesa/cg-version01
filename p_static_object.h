@@ -13,7 +13,7 @@ class StaticObject : public Object{
   bool pickup;
   
  public:
-  StaticObject(vector< POINT > &c, bool is_pickup){
+  StaticObject(vector<Point3D> &c, bool is_pickup){
     // determining if it is a pickup item
     pickup = is_pickup;
     
@@ -21,21 +21,22 @@ class StaticObject : public Object{
     corners = c;
 
     // setting original x and y
-    x = (corners[0].first + corners[3].first)/2;
-    y = (corners[0].second + corners[1].second)/2;
+    center.x = (corners[0].x + corners[3].x)/2.0f;
+    center.y = (corners[0].y + corners[1].y)/2.0f;
+    center.z = (corners[0].z + corners[4].z)/2.0f;
 
     // setting radius according to corners
-    radius = sqrt((corners[0].first - x)*(corners[0].first - x) +
-		  (corners[0].second - y)*(corners[0].second - y));
+    radius = distance(corners[0], center);
+
     for(int i = 1; i < corners.size(); ++i){
-      float buff = sqrt((corners[i].first - x)*(corners[i].first - x) +
-			(corners[i].second - y)*(corners[i].second - y));
+      float buff = distance(corners[i], center);
       if(buff > radius)
 	radius = buff;
     }
 
-    // settings equations of the borders
-    for(int i = 0; i < corners.size(); ++i){
+    // equations
+    // NOT YET UPDATED FOR 3D!!!!!!
+    /*    for(int i = 0; i < corners.size(); ++i){
       float slope, intercept, x1, y1, x2, y2;
       x1 = corners[i].first;
       y1 = corners[i].second;
@@ -49,7 +50,7 @@ class StaticObject : public Object{
       else{
 	equations.push_back(pair<float, float>(x1, INF));
       }
-    }
+      }*/
   }
 
   bool is_pickup(){ return pickup; }

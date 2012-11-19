@@ -20,18 +20,18 @@ class PlayerHandler : public MovingObject{
   int uber_reset;
 
  public:
-  PlayerHandler(float x_init,
-		float y_init,
+  PlayerHandler(Point3D init_center,
 		float max,
 		float accel,
 		float friction,
 		float car_size,
-		float ang,
+		float steer,
+		float inclination,
+		float roll,
 		float health_init){
     // setting initial position
-    x = x_init;
-    y = y_init;
-
+    center = init_center;
+    
     // setting initial speed
     speed = 0.0f;
 
@@ -49,7 +49,11 @@ class PlayerHandler : public MovingObject{
     radius = car_size;
 
     // setting initial angle (counter-clockwise)
-    angle = ang;
+    // theta: horizontal rotation (over z-axis)
+    // phi: roll (over y-axis)
+    steer_angle = steer;
+    inclination_angle = inclination;
+    roll_angle = roll;
 
     // setting initial health
     health = health_init;
@@ -66,21 +70,17 @@ class PlayerHandler : public MovingObject{
     pushed[0] = pushed[1] = pushed[2] = pushed[3] = 0;
 
     // setting initial movement vector
-    mov_vector = POINT(cos(angle*PI/180),
-		       sin(angle*PI/180));
+    // setting initial movement vector
+    mov_vector = make_mov_vector(steer_angle, inclination_angle);
 
     // setting initial corners
-    corners.push_back(POINT(0.0f, 0.0f));
-    corners.push_back(POINT(0.0f, 0.0f));
-    corners.push_back(POINT(0.0f, 0.0f));
-    corners.push_back(POINT(0.0f, 0.0f));
-    set_top_left();
-    set_bottom_left();
-    set_bottom_right();
-    set_top_right();
+    for(int i = 0; i < 8; ++i)
+      corners.push_back(Point3D());
+    set_corners();
 
     // setting initial equations
-    for(int i = 0; i < corners.size(); ++i){
+    // NEW ON UPDATE: needs updating
+    /*    for(int i = 0; i < corners.size(); ++i){
       float slope, intercept, x1, y1, x2, y2;
       x1 = corners[i].first;
       y1 = corners[i].second;
@@ -94,7 +94,7 @@ class PlayerHandler : public MovingObject{
       else{
 	equations.push_back(pair<float, float>(x1, INF));
       }
-    }
+      }*/
   }
 
   /********** GETTERS **********/
@@ -113,11 +113,10 @@ class PlayerHandler : public MovingObject{
   void flip_shot_fired(){ shot_fired = !shot_fired; }
   void reset_uber_count(){ uber_hit_count = 0; uber_reset = UBER_RESET_CONSTANT;}
   void reset_health(){ health = PLAYER_STARTING_HEALTH; }
-  void set_x_y(POINT new_x_y){ x = new_x_y.first; y=new_x_y.second; }
-  void set_angle(float new_angle){
-    angle = new_angle;
-    mov_vector = POINT(cos(angle*PI/180),
-		       sin(angle*PI/180));
+  void set_center(Point3D new_center){ center = new_center; }
+  void set_steer_angle(float new_steer_angle){
+    steer_angle = new_steer_angle;
+    mov_vector = make_mov_vector(steer_angle, inclination_angle);
   }
   /********** SETTERS **********/
 
@@ -134,7 +133,8 @@ class PlayerHandler : public MovingObject{
   void release_right(){ pushed[3] = 0; };
   /********** BUTTON PRESS CONTROLLERS **********/
 
-  void update(){
+  // NEW ON UPDATE: needs updating
+  /*  void update(){
     if(flare_shown > 0)
       flare_shown--;
     else;
@@ -178,7 +178,7 @@ class PlayerHandler : public MovingObject{
       else
 	turn_right();
     else;
-  }
+    }*/
 
   void register_hit(){
     health -= PROJECTILE_STRENGTH/3.0f;
@@ -194,12 +194,13 @@ class PlayerHandler : public MovingObject{
     return 1;
   }
 
-  void bump(){
+  // NEW ON UPDATE: needs updating
+  /*  void bump(){
     speed = -(speed * 0.8f);
     update_position();
     update_position();
     update_position();
-  }
+    }*/
 };
 
 #endif

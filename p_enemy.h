@@ -10,8 +10,8 @@ using namespace std;
 
 class Enemy : public MovingObject{
  private:
-  POINT destination;
-  POINT target_vector;
+  Point3D destination;
+  Point3D target_vector;
   bool in_transit;
 
   float health;
@@ -20,17 +20,17 @@ class Enemy : public MovingObject{
   int shot_cooldown;
 
  public:
-  Enemy(float x_init,
-	float y_init,
+  Enemy(Point3D center_init,
 	float max,
 	float accel,
 	float friction,
 	float car_size,
-	float ang,
+	float steer,
+	float inclination,
+	float roll,
 	float health_init){
     // setting initial position
-    x = x_init;
-    y = y_init;
+    center = center_init;
 
     // setting initial speed
     speed = 0.0f;
@@ -49,7 +49,11 @@ class Enemy : public MovingObject{
     radius = car_size;
 
     // setting initial angle (counter-clockwise)
-    angle = ang;
+    // theta: horizontal rotation (over z-axis)
+    // phi: roll (over y-axis)
+    steer_angle = steer;
+    inclination_angle = inclination;
+    roll_angle = roll;
 
     // setting initial health
     health = health_init;
@@ -58,21 +62,16 @@ class Enemy : public MovingObject{
     shot_fired = 0;
 
     // setting initial movement vector
-    mov_vector = POINT(cos(angle*PI/180),
-		       sin(angle*PI/180));
+    mov_vector = make_mov_vector(steer_angle, inclination_angle);
 
     // setting initial corners
-    corners.push_back(POINT(0.0f, 0.0f));
-    corners.push_back(POINT(0.0f, 0.0f));
-    corners.push_back(POINT(0.0f, 0.0f));
-    corners.push_back(POINT(0.0f, 0.0f));
-    set_top_left();
-    set_bottom_left();
-    set_bottom_right();
-    set_top_right();
+    for(int i = 0; i < 8; ++i)
+      corners.push_back(Point3D());
+    set_corners();
 
     // setting initial equations
-    for(int i = 0; i < corners.size(); ++i){
+    // NEW ON UPDATE: needs updating
+    /*    for(int i = 0; i < corners.size(); ++i){
       float slope, intercept, x1, y1, x2, y2;
       x1 = corners[i].first;
       y1 = corners[i].second;
@@ -86,7 +85,7 @@ class Enemy : public MovingObject{
       else{
 	equations.push_back(pair<float, float>(x1, INF));
       }
-    }
+      }*/
   }
 
   /********** GETTERS **********/
@@ -98,7 +97,8 @@ class Enemy : public MovingObject{
   void flip_shot_fired(){ shot_fired = !shot_fired; }
   /********** SETTERS **********/
 
-  void update(){
+  // NEW ON UPDATE: needs updating
+  /*  void update(){
     if(flare_shown > 0)
       flare_shown--;
     else;
@@ -156,7 +156,7 @@ class Enemy : public MovingObject{
     }
     else if(speed > 0)
       move_back();
-  }
+      }*/
 
   void shoot(){
     shot_fired = 1;
@@ -176,7 +176,8 @@ class Enemy : public MovingObject{
 
   float get_life(){ return health; }
 
-  void bump(){
+  // NEW ON UPDATE: need updating
+  /*  void bump(){
     speed = -(speed * 0.4f);
     turn_left();
     update_position();
@@ -190,7 +191,7 @@ class Enemy : public MovingObject{
     float norm = sqrt((target.first * target.first) +
 		      (target.second * target.second));
     target_vector = POINT(target.first/norm, target.second/norm);
-  }
+    }*/
 
 };
 

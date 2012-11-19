@@ -152,7 +152,7 @@ void changeSize(int w, int h) {
   glMatrixMode(GL_MODELVIEW);
 }
 
-void draw_mask(int mask_idx,
+/*void draw_mask(int mask_idx,
 	       vector<POINT> &corners,
 	       float z_axis=0.0f,
 	       bool turn=0){
@@ -181,42 +181,87 @@ void draw_mask(int mask_idx,
     glVertex3f(corners[3].first, corners[3].second, z_axis);
   }
   glEnd();
-}
+  }*/
 
 void draw_player(){
-  glEnable(GL_TEXTURE_2D);
+  //  glEnable(GL_TEXTURE_2D);
 
-  vector<POINT> corners = playerhan->get_corners();
+  vector<Point3D> corners = playerhan->get_corners();
 
   glEnable(GL_BLEND);
   
   //draw mask for alpha blending
-  if(playerhan->get_flare_shown() > 0)
+  /*  if(playerhan->get_flare_shown() > 0)
     draw_mask(PLAYER_FIRING_MASK, corners);
   else
-    draw_mask(PLAYER_NORMAL_MASK, corners);
+  draw_mask(PLAYER_NORMAL_MASK, corners);
 
   glBlendFunc(GL_ONE,GL_ONE);
   if(playerhan->get_flare_shown() > 0)
     glBindTexture(GL_TEXTURE_2D, textures[PLAYER_FIRING]);
   else
-    glBindTexture(GL_TEXTURE_2D, textures[PLAYER_NORMAL]);
+  glBindTexture(GL_TEXTURE_2D, textures[PLAYER_NORMAL]);*/
 
-  glBegin(GL_QUADS);
-  glTexCoord2f(1.0f, 0.0f);
-  glVertex3f(corners[0].first, corners[0].second, 0.0f);        //top left
-  glTexCoord2f(0.0f, 0.0f);
-  glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
-  glTexCoord2f(0.0f, 1.0f);
-  glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
-  glTexCoord2f(1.0f, 1.0f);
-  glVertex3f(corners[3].first, corners[3].second, 0.0f);      //top right
+  glColor3f(1.0f, 0.0f, 0.0f);
+
+  glBegin(GL_POLYGON);
+ 
+  glColor3f( 1.0, 0.0, 0.0 );     glVertex3f(  0.5, -0.5, -0.5 );
+  glColor3f( 0.0, 1.0, 0.0 );     glVertex3f(  0.5,  0.5, -0.5 );
+  glColor3f( 0.0, 0.0, 1.0 );     glVertex3f( -0.5,  0.5, -0.5 );
+  glColor3f( 1.0, 0.0, 1.0 );     glVertex3f( -0.5, -0.5, -0.5 );
+ 
   glEnd();
-  glDisable(GL_TEXTURE_2D);
-  glDisable(GL_BLEND);
+
+  glBegin(GL_POLYGON);
+  glColor3f(   1.0,  1.0, 1.0 );
+  glVertex3f(  0.5, -0.5, 0.5 );
+  glVertex3f(  0.5,  0.5, 0.5 );
+  glVertex3f( -0.5,  0.5, 0.5 );
+  glVertex3f( -0.5, -0.5, 0.5 );
+  glEnd();
+ 
+  // Purple side - RIGHT
+  glBegin(GL_POLYGON);
+  glColor3f(  1.0,  0.0,  1.0 );
+  glVertex3f( 0.5, -0.5, -0.5 );
+  glVertex3f( 0.5,  0.5, -0.5 );
+  glVertex3f( 0.5,  0.5,  0.5 );
+  glVertex3f( 0.5, -0.5,  0.5 );
+  glEnd();
+ 
+  // Green side - LEFT
+  glBegin(GL_POLYGON);
+  glColor3f(   0.0,  1.0,  0.0 );
+  glVertex3f( -0.5, -0.5,  0.5 );
+  glVertex3f( -0.5,  0.5,  0.5 );
+  glVertex3f( -0.5,  0.5, -0.5 );
+  glVertex3f( -0.5, -0.5, -0.5 );
+  glEnd();
+ 
+  // Blue side - TOP
+  glBegin(GL_POLYGON);
+  glColor3f(   0.0,  0.0,  1.0 );
+  glVertex3f(  0.5,  0.5,  0.5 );
+  glVertex3f(  0.5,  0.5, -0.5 );
+  glVertex3f( -0.5,  0.5, -0.5 );
+  glVertex3f( -0.5,  0.5,  0.5 );
+  glEnd();
+ 
+  // Red side - BOTTOM
+  glBegin(GL_POLYGON);
+  glColor3f(   1.0,  0.0,  0.0 );
+  glVertex3f(  0.5, -0.5, -0.5 );
+  glVertex3f(  0.5, -0.5,  0.5 );
+  glVertex3f( -0.5, -0.5,  0.5 );
+  glVertex3f( -0.5, -0.5, -0.5 );
+  glEnd();
+
+/*  glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);*/
 }
 
-void draw_floor(){
+/*void draw_floor(){
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, textures[FLOOR]);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -513,7 +558,7 @@ void draw_endgame_billboard(){
   glDisable(GL_TEXTURE_2D);
 
   glPopMatrix();
-}
+  }*/
 
 void renderScene(void){
   // Clear Color and Depth Buffers
@@ -523,14 +568,16 @@ void renderScene(void){
   // Reset transformations
   glLoadIdentity();
  
-  float player_x = playerhan->get_x_y().first;
-  float player_y = playerhan->get_x_y().second;
+  float player_x = playerhan->get_center().x;
+  float player_y = playerhan->get_center().y;
+  float player_z = playerhan->get_center().z;
   // Set the camera
   gluLookAt(player_x, player_y, camera_distance,
 	    player_x, player_y,  0.0f,
 	    0.0f, 1.0f,  0.0f);
 
-  gamehan->update();
+  draw_player();
+  /*  gamehan->update();
 
   draw_floor();
   draw_player();
@@ -544,7 +591,7 @@ void renderScene(void){
   draw_lifebar();
 
   if(gamehan->check_game_condition() != 0)
-    draw_endgame_billboard();
+  draw_endgame_billboard();*/
 
   glutSwapBuffers();
 }
@@ -621,17 +668,20 @@ int main(int argc, char **argv) {
   game_over_billboard_distance = 0.0f;
   camera_distance = 10.f;
 
-  playerhan = new PlayerHandler(PLAYER_STARTING_X,
-				PLAYER_STARTING_Y,
+  playerhan = new PlayerHandler(Point3D(PLAYER_STARTING_X,
+					PLAYER_STARTING_Y,
+					PLAYER_STARTING_Z),
 				PLAYER_MAX_SPEED,
 				PLAYER_ACCELERATION,
 				PLAYER_FRICTION,
 				PLAYER_SIZE,
 				PLAYER_STARTING_ANGLE,
+				0.0f,
+				0.0f,
 				PLAYER_STARTING_HEALTH);
-  gamehan = new GameHandler(playerhan);
+  /*  gamehan = new GameHandler(playerhan);
 
-  gamehan->set_game();
+      gamehan->set_game();*/
 
   // init GLUT and create window
   glutInit(&argc, argv);

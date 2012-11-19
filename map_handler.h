@@ -6,9 +6,6 @@
 #include "p_player.h"
 #include "p_projectile.h"
 
-#define POINT pair<float, float>
-#define INF 0xffffffff
-
 using namespace std;
 
 class MapHandler{
@@ -53,7 +50,7 @@ class MapHandler{
   /********** SETTERS **********/
 
   /********** OBJECT CREATORS **********/
-  void add_static_object(vector< pair<float, float> > &c, bool is_pickup){
+  void add_static_object(vector<Point3D> &c, bool is_pickup){
     StaticObject * new_object = new StaticObject(c, is_pickup);
     if(is_pickup)
       pickups.push_back(new_object);
@@ -62,9 +59,10 @@ class MapHandler{
   }
 
   void add_pickup(MovingObject * dropper){
-    POINT center = dropper->get_x_y();
-    vector<POINT> corners;
-    corners.push_back(pair<float, float>(center.first-PICKUP_SIZE,
+    Point3D center = dropper->get_center();
+    vector<Point3D> corners;
+    // NEW ON UPDATE: needs updating
+    /*    corners.push_back(pair<float, float>(center.first-PICKUP_SIZE,
 					 center.second+PICKUP_SIZE));
     corners.push_back(pair<float, float>(center.first-PICKUP_SIZE,
 					 center.second-PICKUP_SIZE));
@@ -72,27 +70,31 @@ class MapHandler{
 					 center.second-PICKUP_SIZE));
     corners.push_back(pair<float, float>(center.first+PICKUP_SIZE,
 					 center.second+PICKUP_SIZE));
-
+    */
     add_static_object(corners, 1);
   }
 
 
-  void add_enemy_object(float x, float y, float max_speed,
+  /*  void add_enemy_object(Point3D center, float max_speed,
 			float acceleration, float friction,
-			float size, float angle, float health){
-    Enemy * new_enemy = new Enemy(x, y, max_speed, acceleration, friction,
-				  size, angle, health);
+			float size, float steer_angle, float inclination_angle,
+			float roll_angle, float health){
+    Enemy * new_enemy = new Enemy(center, max_speed, acceleration, friction,
+				  size, steer_angle, inclination_angle,
+				  roll_angle, health);
     enemies.push_back(new_enemy);
-  }
+    }*/
 
-  void add_projectile(float x, float y, float max_speed,
+  /*  void add_projectile(Point3D center, float max_speed,
 		      float acceleration, float friction,
-		      float size, float angle){
-    Projectile * new_projectile = new Projectile(x, y, max_speed,
+		      float size, float steer_angle, float inclination_angle,
+			float roll_angle){
+    Projectile * new_projectile = new Projectile(center, max_speed,
 						 acceleration, friction,
-						 size, angle);
+						 size, steer_angle,
+						 inclination_angle, roll_angle);
     projectiles.push_back(new_projectile);
-  }
+    }*/
 
   void add_player(PlayerHandler * p){
     player = p;
@@ -100,29 +102,29 @@ class MapHandler{
   /********** OBJECT CREATORS **********/
 
   /********** UTLILITY FUNCTIONS **********/
-  float distance(POINT a, POINT b){
-    return sqrt((a.first - b.first)*(a.first - b.first) +
-		(a.second - b.second)*(a.second - b.second));
+  float distance(Point3D a, Point3D b){
+    return sqrt((a.x - b.x)*(a.x - b.x) +
+		(a.y - b.y)*(a.y - b.y) + 
+		(a.z - b.z)*(a.z - b.z));
   }
 
-  POINT get_line_equation(POINT a, POINT b){
+  // NEW ON UPDATE: needs updating *CRITICAL*
+  /*  POINT get_line_equation(POINT a, POINT b){
     float slope, intercept;
     slope = (a.second - b.second)/(a.first - b.first);
     intercept = a.second - slope * a.first;
     return POINT(slope, intercept);
-  }
+    }*/
 
-  bool point_in_line(POINT p, POINT l1, POINT l2){
-
-  }
   /********** UTLILITY FUNCTIONS **********/
 
   /********** COLLISION DETECTORS **********/
-  bool check_for_collision(vector<POINT> active,
+  // NEW ON UPDATE: needs updating *CRITICAL*
+  /*  bool check_for_collision(vector<POINT> active,
 			   vector<POINT> passive,
 			   vector<POINT> equations){
     float slope, intercept, xi, yi;
-    POINT equation;
+    POINT equation;*/
     /*
       slope = slope for equation of a side of the moving object
       intercept = intercept for equation of a side of the moving object
@@ -130,7 +132,7 @@ class MapHandler{
     */
 
     //front
-    equation = get_line_equation(active[0], active[3]);
+  /*    equation = get_line_equation(active[0], active[3]);
     slope = equation.first;
     intercept = equation.second;
 
@@ -209,9 +211,9 @@ class MapHandler{
 	return 1;
     }
     return 0;
-  }
+    }*/
 
-  void check_moving_vs_static_collisions(){
+  /*  void check_moving_vs_static_collisions(){
     for(int i = 0; i < buildings.size(); ++i){
       if(distance(player->get_x_y(), buildings[i]->get_x_y()) <=
 	 (player->get_radius() + buildings[i]->get_radius())){
@@ -360,7 +362,7 @@ class MapHandler{
       if(current)
 	++i;
     }
-  }  
+    }  */
  /********** COLLISION DETECTORS **********/
 
   /********** DEATH DETECTORS **********/
@@ -378,7 +380,8 @@ class MapHandler{
   }
 
  
-  void update(){
+  // NEW ON UPDATE: needs updating
+  /* void update(){
     check_moving_vs_static_collisions();
     check_moving_vs_moving_collisions();
     check_projectile_collisions();
@@ -391,5 +394,5 @@ class MapHandler{
     }
     for(int i = 0; i < projectiles.size(); ++i)
       projectiles[i]->update();
-  }
+      }*/
 };

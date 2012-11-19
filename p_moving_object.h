@@ -15,24 +15,26 @@ class MovingObject : public Object{
   float max_speed;
   float friction_constant;
   float current_friction;
-  float angle;
-  POINT mov_vector;
+  float steer_angle;
+  float inclination_angle;
+  float roll_angle;
+  Point3D mov_vector;
 
  public:
   MovingObject(){};
 
-  MovingObject(float x_init,
-	       float y_init,
+  MovingObject(Point3D init_center,
 	       float max,
 	       float accel,
 	       float friction,
 	       float car_size,
-	       float ang=90.0f){
+	       float steer,
+	       float inclination,
+	       float roll){
 
     // setting initial position
-    x = x_init;
-    y = y_init;
-
+    center = init_center;
+    
     // setting initial speed
     speed = 0.0f;
 
@@ -50,24 +52,23 @@ class MovingObject : public Object{
     radius = car_size;
 
     // setting initial angle (counter-clockwise)
-    angle = ang;
+    // theta: horizontal rotation (over z-axis)
+    // phi: roll (over y-axis)
+    steer_angle = steer;
+    inclination_angle = inclination;
+    roll_angle = roll;
 
     // setting initial movement vector
-    mov_vector = POINT(cos(angle*PI/180),
-		       sin(angle*PI/180));
+    mov_vector = make_mov_vector(steer_angle, inclination_angle);
 
     // setting initial corners
-    corners.push_back(POINT(0.0f, 0.0f));
-    corners.push_back(POINT(0.0f, 0.0f));
-    corners.push_back(POINT(0.0f, 0.0f));
-    corners.push_back(POINT(0.0f, 0.0f));
-    set_top_left();
-    set_bottom_left();
-    set_bottom_right();
-    set_top_right();
+    for(int i = 0; i < 8; ++i)
+      corners.push_back(Point3D());
+    set_corners();
 
     // setting initial equations
-    for(int i = 0; i < corners.size(); ++i){
+    // NEW ON UPDATE: not updated yet for 3d
+    /*    for(int i = 0; i < corners.size(); ++i){
       float slope, intercept, x1, y1, x2, y2;
       x1 = corners[i].first;
       y1 = corners[i].second;
@@ -81,67 +82,117 @@ class MovingObject : public Object{
       else{
 	equations.push_back(pair<float, float>(x1, INF));
       }
-    }
+      }*/
+  }
+
+  /********** UTILS **********/
+  Point3D make_mov_vector(float theta, float phi){
+    return Point3D(cos(theta*PI/180),
+		   sin(theta*PI/180)*cos(phi*PI/180),
+		   sin(phi*PI/180));
   }
 
   /********** GETTERS **********/
-  POINT get_top_left(){ return corners[0]; };
-  POINT get_bottom_left(){ return corners[1]; };
-  POINT get_bottom_right(){ return corners[2]; };
-  POINT get_top_right(){ return corners[3]; };
+  Point3D get_top_left(){ return corners[0]; };
+  Point3D get_bottom_left(){ return corners[1]; };
+  Point3D get_bottom_right(){ return corners[2]; };
+  Point3D get_top_right(){ return corners[3]; };
 
   float get_speed(){ return speed; };
-  float get_angle(){ return angle; };
+  float get_steer_angle(){ return steer_angle; };
   float get_max_speed(){ return max_speed; };
   float get_size(){ return radius; };
   float get_acceleration(){ return acceleration; };
   float get_friction(){ return friction_constant; };
-  POINT get_mov_vector(){ return mov_vector; };
+  Point3D get_mov_vector(){ return mov_vector; };
   /********** GETTERS **********/
 
   /********** UPDATERS  **********/
+  void set_corners(){
+    set_top_left();
+    set_top_right();
+    set_bottom_left();
+    set_bottom_right();
+  }
+
   void set_top_left(){
-    float ang = (angle + TH);
+    float ang = (steer_angle + TOP_ANGLE);
     POINT direction(cos(ang*PI/180.0f), sin(ang*PI/180.0f));
 
     float denom = sqrt(direction.first*direction.first +
 		       direction.second*direction.second);
     float factor = radius / denom;
-    corners[0].first = x + (direction.first * factor);
-    corners[0].second = y + (direction.second * factor);
+
+    // going 3D
+    float z_diff = radius * (cos(TOP_ANGLE*PI/180) / sin(TOP_ANGLE*PI/180));
+    
+    corners[0].x = center.x + (direction.first * factor);
+    corners[0].y = center.y + (direction.second * factor);
+    corners[0].z = center.z - z_diff;
+
+    corners[4].x = center.x + (direction.first * factor);
+    corners[4].y = center.y + (direction.second * factor);
+    corners[4].z = center.z + z_diff;
   }
 
   void set_top_right(){
-    float ang = (angle + TH + 300);
+    float ang = (steer_angle + TOP_ANGLE + 300);
     POINT direction(cos(ang*PI/180), sin(ang*PI/180));
     
     float denom = sqrt(direction.first*direction.first +
 		       direction.second*direction.second);
     float factor = radius / denom;
-    corners[3].first = x + (direction.first * factor);
-    corners[3].second = y + (direction.second * factor);
+
+    // going 3D
+    float z_diff = radius * (cos(TOP_ANGLE*PI/180) / sin(TOP_ANGLE*PI/180));
+    
+    corners[3].x = center.x + (direction.first * factor);
+    corners[3].y = center.y + (direction.second * factor);
+    corners[3].z = center.z - z_diff;
+
+    corners[7].x = center.x + (direction.first * factor);
+    corners[7].y = center.y + (direction.second * factor);
+    corners[7].z = center.z + z_diff;
   }
 
   void set_bottom_left(){
-    float ang = (angle + 120 + TH);
+    float ang = (steer_angle + 120 + TOP_ANGLE);
     POINT direction(cos(ang*PI/180), sin(ang*PI/180));
     
     float denom = sqrt(direction.first*direction.first +
 		       direction.second*direction.second);
     float factor = radius / denom;
-    corners[1].first = x + (direction.first * factor);
-    corners[1].second = y + (direction.second * factor);
+
+    // going 3D
+    float z_diff = radius * (cos(TOP_ANGLE*PI/180) / sin(TOP_ANGLE*PI/180));
+    
+    corners[1].x = center.x + (direction.first * factor);
+    corners[1].y = center.y + (direction.second * factor);
+    corners[1].z = center.z - z_diff;
+
+    corners[5].x = center.x + (direction.first * factor);
+    corners[5].y = center.y + (direction.second * factor);
+    corners[5].z = center.z + z_diff;
   }
 
   void set_bottom_right(){
-    float ang = (angle + TH + 180);
+    float ang = (steer_angle + TOP_ANGLE + 180);
     POINT direction(cos(ang*PI/180), sin(ang*PI/180));
     
     float denom = sqrt(direction.first*direction.first +
 		       direction.second*direction.second);
     float factor = radius / denom;
-    corners[2].first = x + (direction.first * factor);
-    corners[2].second = y + (direction.second * factor);
+
+    // going 3D
+    float z_diff = radius * (cos(TOP_ANGLE*PI/180) / sin(TOP_ANGLE*PI/180));
+    
+    corners[2].x = center.x + (direction.first * factor);
+    corners[2].y = center.y + (direction.second * factor);
+    corners[2].z = center.z - z_diff;
+
+    corners[6].x = center.x + (direction.first * factor);
+    corners[6].y = center.y + (direction.second * factor);
+    corners[6].z = center.z + z_diff;
   }
 
   void process_friction(){
@@ -151,7 +202,8 @@ class MovingObject : public Object{
       speed += current_friction;
   }
 
-  void update_position(){
+  // NEW ON UPDATE: need to check this function
+  /*  void update_position(){
     float denom = sqrt(mov_vector.first*mov_vector.first +
 		       mov_vector.second*mov_vector.second);
     float factor = speed / denom;
@@ -180,11 +232,12 @@ class MovingObject : public Object{
 	equations[i] = pair<float, float>(x1, INF);
       }
     }
-  }
+    }*/
   /********** UPDATERS **********/
 
   /********** MOVEMENT HANDLERS **********/
-  void move_forward(){
+  // NEW ON UPDATE: all of this needs updating to 3d
+  /*  void move_forward(){
     if(speed < max_speed)
       speed += acceleration;
     else;
@@ -208,12 +261,12 @@ class MovingObject : public Object{
     angle = (angle - PLAYER_TURNING_SPEED);
     mov_vector.first = cos(angle*PI/180);
     mov_vector.second = sin(angle*PI/180);
-  }
+    }*/
 
-  virtual void bump() = 0;
+  // virtual void bump() = 0;
   /********** MOVEMENT HANDLERS **********/
 
-  virtual void update() = 0;
+  //  virtual void update() = 0;
 };
 
 #endif
