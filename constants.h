@@ -38,6 +38,14 @@ const float PROJECTILE_SIZE = 0.12f;
 const float PROJECTILE_FRICTION = 0.0f;
 const float PROJECTILE_STRENGTH = 100.0f;
 
+/********** CAMERA CONSTANTS **********/
+const float UP_X = 0.0f;
+const float UP_Y = 0.5f;
+const float UP_Z = 0.0f;
+const float CENTER_DIFF_X = 0.0f;
+const float CENTER_DIFF_Y = -8.0f;
+const float CENTER_DIFF_Z = 7.0f;
+
 /********** MISC CONSTANTS **********/
 const float PI = 3.141592654f;
 const float TOP_ANGLE = 30.0f;  //angle formed between the diagonal of the car and the front

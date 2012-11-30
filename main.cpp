@@ -1,9 +1,3 @@
-/*
-NOTAS:
--frustrum para el dibujado de solo lo necesario
--investigar push y pop matrix
- */
-
 #include <stdlib.h>
 #include <vector>
 
@@ -13,6 +7,7 @@ NOTAS:
 #include <GL/glut.h>
 #endif
 #include "game_handler.h"
+#include "camera_handler.h"
 #include "SOIL.h"
 
 #define PLAYER_NORMAL 0
@@ -63,6 +58,7 @@ NOTAS:
 
 GameHandler * gamehan;
 PlayerHandler * playerhan;
+CameraHandler * camhan;
 
 float camera_distance;
 
@@ -569,16 +565,39 @@ void renderScene(void){
   // Reset transformations
   glLoadIdentity();
  
-  float player_x = playerhan->get_center().x;
-  float player_y = playerhan->get_center().y;
-  float player_z = playerhan->get_center().z;
   // Set the camera
-  gluLookAt(player_x, player_y-2.0f, camera_distance-3.0f, // camera pos
-	    player_x, player_y,  0.0f, // point to look
-	    0.0f, 0.5f, 0.0f); // up vector
+  gluLookAt(camhan->get_center().x,
+	    camhan->get_center().y,
+	    camhan->get_center().z, // pos
+	    camhan->get_focus().x,
+	    camhan->get_focus().y,
+	    camhan->get_focus().z, // focus
+	    camhan->get_up().x,
+	    camhan->get_up().y,
+	    camhan->get_up().z); // up
 
   draw_player();
   gamehan->update();
+  camhan->update();
+
+  glBegin(GL_QUADS);
+  // Top
+  glColor3f(0.0f, 1.0f, 0.0f);
+  glVertex3f(-1, 1, 1);
+  glVertex3f(-1, -1, 1);
+  glVertex3f(1, -1, 1);
+  glVertex3f(1, 1, 1);
+  glEnd();
+
+  glBegin(GL_QUADS);
+  // Bottom
+  glColor3f(1.0f, 1.0f, 1.0f);
+  glVertex3f(-1, 1, -1);
+  glVertex3f(-1, -1, -1);
+  glVertex3f(1, -1, -1);
+  glVertex3f(1, 1, -1);
+  glEnd();
+  
 
     /*  draw_floor();
   draw_player();
@@ -680,6 +699,7 @@ int main(int argc, char **argv) {
 				0.0f,
 				0.0f,
 				PLAYER_STARTING_HEALTH);
+  camhan = new CameraHandler(playerhan);
   gamehan = new GameHandler(playerhan);
 
   /*    gamehan->set_game();*/
