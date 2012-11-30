@@ -44,9 +44,11 @@ class CameraHandler{
 
 
     // cambiar CENTER_DIFF_Y a camera distance o algo
-    center = Point3D(focus_object->get_center().x + CENTER_DIFF_X,
-		     focus_object->get_center().y + CENTER_DIFF_Y,
+    center = Point3D(focus_object->get_center().x + focus_object->get_mov_vector().x*CENTER_DIFF_Y,
+		     focus_object->get_center().y + focus_object->get_mov_vector().y*CENTER_DIFF_Y,
 		     focus_object->get_center().z + CENTER_DIFF_Z);
+
+    cout << focus_object->get_mov_vector().y << endl;
   }
 
   float distance(Point3D a, Point3D b){
