@@ -2,7 +2,9 @@
 #include <unistd.h>
 #include <iostream>
 #include "map_handler.h"
-#include "p_lifebar.h"
+
+#ifndef GAME_HANDLER_H
+#define GAME_HANDLER_H
 
 #define POINT pair<float, float>
 
@@ -213,3 +215,6 @@ class GameHandler{
   }
 
 };
+
+
+#endif

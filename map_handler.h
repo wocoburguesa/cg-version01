@@ -6,6 +6,9 @@
 #include "p_player.h"
 #include "p_projectile.h"
 
+#ifndef MAP_HANDLER_H
+#define MAP_HANDLER_H
+
 #define POINT pair<float, float>
 #define INF 0xffffffff
 
@@ -393,3 +396,5 @@ class MapHandler{
       projectiles[i]->update();
   }
 };
+
+#endif
