@@ -23,6 +23,7 @@ class MovingObject : public Object{
 
   MovingObject(float x_init,
 	       float y_init,
+	       float hght,
 	       float max,
 	       float accel,
 	       float friction,
@@ -32,6 +33,9 @@ class MovingObject : public Object{
     // setting initial position
     x = x_init;
     y = y_init;
+
+    //setting height
+    height = hght;
 
     // setting initial speed
     speed = 0.0f;

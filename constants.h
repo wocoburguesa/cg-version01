@@ -9,6 +9,7 @@ using namespace std;
 /********** PLAYER CONSTANTS **********/
 const float PLAYER_STARTING_X = 0.0f;
 const float PLAYER_STARTING_Y = 0.0f;
+const float PLAYER_HEIGHT = 3.0f;
 const float PLAYER_MAX_SPEED = 0.01f;
 const float PLAYER_ACCELERATION = 0.00003f;
 const float PLAYER_FRICTION = 0.000005f;
@@ -24,6 +25,8 @@ const float MIN_ENEMY_SIZE = PLAYER_SIZE * 0.8f;
 const float MAX_ENEMY_SIZE = PLAYER_SIZE * 1.4f;
 const float MIN_ENEMY_SPEED = PLAYER_MAX_SPEED * 0.8f;
 const float MAX_ENEMY_SPEED = PLAYER_MAX_SPEED * 1.2f;
+const float MIN_ENEMY_HEIGHT = PLAYER_HEIGHT * 0.8f;
+const float MAX_ENEMY_HEIGHT = PLAYER_HEIGHT * 1.2f;
 const float ENEMY_STARTING_HEALTH = PLAYER_STARTING_HEALTH * 0.4f;
 const float ENEMY_SHOT_COOLDOWN = 300.0f;
 
@@ -32,10 +35,13 @@ const float PROJECTILE_BASE_SPEED = 0.02f;
 const float PROJECTILE_MAX_SPEED = 0.02f;
 const float PROJECTILE_ACCELERATION = 0.0f;
 const float PROJECTILE_SIZE = 0.12f;
+const float PROJECTILE_HEIGHT = PROJECTILE_SIZE * 0.6f;
 const float PROJECTILE_FRICTION = 0.0f;
 const float PROJECTILE_STRENGTH = 100.0f;
 
 /********** MISC CONSTANTS **********/
+const float MIN_BUILDING_HEIGHT = PLAYER_HEIGHT * 3.0f;
+const float MAX_BUILDING_HEIGHT = PLAYER_HEIGHT * 4.0f;
 const float PI = 3.141592654f;
 const float TH = 30.0f;  //angle formed between the diagonal of the car and the front
 const float CRASH_DAMAGE = 10.0f;
@@ -44,9 +50,12 @@ const float SCREEN_WIDTH = 1366;
 const float SCREEN_HEIGHT = 780;
 const float COUNTER_WIDTH = 1.0f;;
 const float COUNTER_HEIGHT = 0.5f;
-const float PICKUP_SIZE = 0.5f;
 const int ITEMS_NEEDED = 7;
 const float MAP_WIDTH = 30.0f;
 const float MAP_HEIGHT = 20.0f;
+
+/********** PICKUP CONSTANTS **********/
+const float PICKUP_SIZE = 0.5f;
+const float PICKUP_HEIGHT = 1.0f;
 
 #endif

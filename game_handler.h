@@ -110,21 +110,34 @@ class GameHandler{
   int check_game_condition(){ return game_condition; };
 
   int get_items_collected(){ return items_collected; };
+  
+  float get_rand_in_range(float a, float b){
+    if(a > b){
+      int aux = b;
+      b = a;
+      a = aux;
+    }
+    else;
+
+    float diff = b - a;
+    diff = diff * (rand()%100)/100.0f;
+    return a + diff;
+  }
 
   void spawn_building(vector<POINT> &corners){
-    maphan->add_static_object(corners, 0);
+    float height = get_rand_in_range(MIN_BUILDING_HEIGHT,
+				     MAX_BUILDING_HEIGHT);
+
+    maphan->add_static_object(corners, height, 0);
   }
 
   void spawn_enemy(float x, float y){
-    float size = rand() % 100;
-    size = MIN_ENEMY_SIZE + (MAX_ENEMY_SIZE - MIN_ENEMY_SIZE)*size/100.0f;
-    float max_speed = rand() % 100;
-    max_speed =
-      MIN_ENEMY_SPEED + (MAX_ENEMY_SPEED - MIN_ENEMY_SPEED)*max_speed/100.0f;
-    /*    float x = player->get_x_y().first - 6.0f;
-	  float y = player->get_x_y().second - 1.0f;*/
-    float angle = PLAYER_STARTING_ANGLE;
-    maphan->add_enemy_object(x, y, max_speed, player->get_acceleration(),
+    float size = get_rand_in_range(MIN_ENEMY_SIZE, MAX_ENEMY_SIZE);
+    float max_speed = get_rand_in_range(MIN_ENEMY_SPEED, MAX_ENEMY_SPEED);
+    float height = get_rand_in_range(MIN_ENEMY_HEIGHT, MAX_ENEMY_HEIGHT);
+
+    maphan->add_enemy_object(x, y, height,
+			     max_speed, player->get_acceleration(),
 			     player->get_friction(), size, 180.0f,
 			     ENEMY_STARTING_HEALTH);
   }
@@ -139,6 +152,7 @@ class GameHandler{
       float x = shooter->get_x_y().first + shooter_vec.first * factor;
       float y = shooter->get_x_y().second + shooter_vec.second * factor;
       maphan->add_projectile(x, y,
+			     PROJECTILE_HEIGHT,
 			     0.0f, //max speed, overridden
 			     0.0f, //accel, overridden
 			     PROJECTILE_FRICTION, // friction
@@ -156,8 +170,8 @@ class GameHandler{
       float factor = shooter->get_radius() / denom;
       float x = shooter->get_x_y().first + out_vector.first * factor;
       float y = shooter->get_x_y().second + out_vector.second * factor;
-      maphan->add_projectile(x,
-			     y,
+      maphan->add_projectile(x, y,
+			     PROJECTILE_HEIGHT,
 			     0.0f, //max speed, overridden
 			     0.0f, //accel, overridden
 			     PROJECTILE_FRICTION, // friction

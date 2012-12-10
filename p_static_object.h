@@ -13,7 +13,7 @@ class StaticObject : public Object{
   bool pickup;
   
  public:
-  StaticObject(vector< POINT > &c, bool is_pickup){
+  StaticObject(vector< POINT > &c, float hght, bool is_pickup){
     // determining if it is a pickup item
     pickup = is_pickup;
     
@@ -23,6 +23,9 @@ class StaticObject : public Object{
     // setting original x and y
     x = (corners[0].first + corners[3].first)/2;
     y = (corners[0].second + corners[1].second)/2;
+
+    // setting height
+    height = hght;
 
     // setting radius according to corners
     radius = sqrt((corners[0].first - x)*(corners[0].first - x) +

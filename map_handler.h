@@ -56,8 +56,10 @@ class MapHandler{
   /********** SETTERS **********/
 
   /********** OBJECT CREATORS **********/
-  void add_static_object(vector< pair<float, float> > &c, bool is_pickup){
-    StaticObject * new_object = new StaticObject(c, is_pickup);
+  void add_static_object(vector< pair<float, float> > &c,
+			 float height,
+			 bool is_pickup){
+    StaticObject * new_object = new StaticObject(c, height, is_pickup);
     if(is_pickup)
       pickups.push_back(new_object);
     else
@@ -76,22 +78,23 @@ class MapHandler{
     corners.push_back(pair<float, float>(center.first+PICKUP_SIZE,
 					 center.second+PICKUP_SIZE));
 
-    add_static_object(corners, 1);
+    add_static_object(corners, PICKUP_HEIGHT, 1);
   }
 
 
-  void add_enemy_object(float x, float y, float max_speed,
+  void add_enemy_object(float x, float y, float height, float max_speed,
 			float acceleration, float friction,
 			float size, float angle, float health){
-    Enemy * new_enemy = new Enemy(x, y, max_speed, acceleration, friction,
+    Enemy * new_enemy = new Enemy(x, y, height,
+				  max_speed, acceleration, friction,
 				  size, angle, health);
     enemies.push_back(new_enemy);
   }
 
-  void add_projectile(float x, float y, float max_speed,
+  void add_projectile(float x, float y, float height, float max_speed,
 		      float acceleration, float friction,
 		      float size, float angle){
-    Projectile * new_projectile = new Projectile(x, y, max_speed,
+    Projectile * new_projectile = new Projectile(x, y, height, max_speed,
 						 acceleration, friction,
 						 size, angle);
     projectiles.push_back(new_projectile);

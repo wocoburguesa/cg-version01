@@ -22,6 +22,7 @@ class Enemy : public MovingObject{
  public:
   Enemy(float x_init,
 	float y_init,
+	float hght,
 	float max,
 	float accel,
 	float friction,
@@ -31,6 +32,9 @@ class Enemy : public MovingObject{
     // setting initial position
     x = x_init;
     y = y_init;
+
+    //setting height
+    height = hght;
 
     // setting initial speed
     speed = 0.0f;

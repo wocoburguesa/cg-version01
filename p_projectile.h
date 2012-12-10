@@ -12,6 +12,7 @@ class Projectile : public MovingObject{
  public:
   Projectile(float x_init,
 	     float y_init,
+	     float hght,
 	     float max,
 	     float accel,
 	     float friction,
@@ -20,6 +21,9 @@ class Projectile : public MovingObject{
     // setting initial position
     x = x_init;
     y = y_init;
+
+    //setting height
+    height = hght;
 
     speed = PROJECTILE_BASE_SPEED;
 

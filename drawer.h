@@ -168,36 +168,74 @@ class ObjectDrawer{
   }
   
   void draw_player(){
-    glEnable(GL_TEXTURE_2D);
+    //    glEnable(GL_TEXTURE_2D);
 
     vector<POINT> corners = playerhan->get_corners();
+    float height = playerhan->get_height();
 
-    glEnable(GL_BLEND);
+    //    glEnable(GL_BLEND);
   
     //draw mask for alpha blending
-    if(playerhan->get_flare_shown() > 0)
+    /*    if(playerhan->get_flare_shown() > 0)
       draw_mask(PLAYER_FIRING_MASK, corners);
     else
-      draw_mask(PLAYER_NORMAL_MASK, corners);
+    draw_mask(PLAYER_NORMAL_MASK, corners);*/
 
-    glBlendFunc(GL_ONE,GL_ONE);
+    /*    glBlendFunc(GL_ONE,GL_ONE);
     if(playerhan->get_flare_shown() > 0)
       glBindTexture(GL_TEXTURE_2D, textures[PLAYER_FIRING]);
     else
-      glBindTexture(GL_TEXTURE_2D, textures[PLAYER_NORMAL]);
+    glBindTexture(GL_TEXTURE_2D, textures[PLAYER_NORMAL]);*/
 
     glBegin(GL_QUADS);
-    glTexCoord2f(1.0f, 0.0f);
+    //Bottom
+    glColor3f(1.0f, 0.0f, 0.0f);
+    //    glTexCoord2f(1.0f, 0.0f);
     glVertex3f(corners[0].first, corners[0].second, 0.0f);        //top left
-    glTexCoord2f(0.0f, 0.0f);
+    //    glTexCoord2f(0.0f, 0.0f);
     glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
-    glTexCoord2f(0.0f, 1.0f);
+    //    glTexCoord2f(0.0f, 1.0f);
     glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
-    glTexCoord2f(1.0f, 1.0f);
+    //    glTexCoord2f(1.0f, 1.0f);
     glVertex3f(corners[3].first, corners[3].second, 0.0f);      //top right
+
+    //Top
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(corners[3].first, corners[3].second, height);        //top left
+    glVertex3f(corners[2].first, corners[2].second, height);  //bottom left
+    glVertex3f(corners[1].first, corners[1].second, height);//bottom right
+    glVertex3f(corners[0].first, corners[0].second, height);      //top right
+
+    //Back
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(corners[1].first, corners[1].second, height);        //top left
+    glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
+    glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
+    glVertex3f(corners[2].first, corners[2].second, height);      //top right
+
+    //Front
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(corners[3].first, corners[3].second, height);        //top left
+    glVertex3f(corners[3].first, corners[3].second, 0.0f);  //bottom left
+    glVertex3f(corners[0].first, corners[0].second, 0.0f);//bottom right
+    glVertex3f(corners[0].first, corners[0].second, height);      //top right
+
+    //Left
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(corners[0].first, corners[0].second, height);        //top left
+    glVertex3f(corners[0].first, corners[0].second, 0.0f);  //bottom left
+    glVertex3f(corners[1].first, corners[1].second, 0.0f);//bottom right
+    glVertex3f(corners[1].first, corners[1].second, height);      //top right
+
+    //Right
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(corners[2].first, corners[2].second, height);        //top left
+    glVertex3f(corners[2].first, corners[2].second, 0.0f);  //bottom left
+    glVertex3f(corners[3].first, corners[3].second, 0.0f);//bottom right
+    glVertex3f(corners[3].first, corners[3].second, height);      //top right
     glEnd();
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
+    //    glDisable(GL_TEXTURE_2D);
+    //    glDisable(GL_BLEND);
   }
 
   void draw_floor(){
@@ -223,27 +261,114 @@ class ObjectDrawer{
 
   void draw_buildings(){
     MapHandler * maphan = gamehan->get_maphan();
+    float height;
 
     for(int i = 0; i < maphan->get_buildings_count(); ++i){
       StaticObject * curr = maphan->get_building_by_idx(i);
+      height = curr->get_height();
       vector<POINT> corners = curr->get_corners();
-      glColor3f(0.9f, 0.9f, 0.9f);
+      glColor3f(0.7f, 0.7f, 0.7f);
       glBegin(GL_QUADS);
-      for(int j = 0; j < corners.size(); ++j)
-	glVertex3f(corners[j].first, corners[j].second, 0.0f);
+      //Bottom
+      glColor3f(1.0f, 0.0f, 0.0f);
+      glVertex3f(corners[0].first, corners[0].second, 0.0f);        //top left
+      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
+      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
+      glVertex3f(corners[3].first, corners[3].second, 0.0f);      //top right
+
+      //Top
+      glColor3f(0.0f, 1.0f, 0.0f);
+      glVertex3f(corners[0].first, corners[0].second, height);        //top left
+      glVertex3f(corners[1].first, corners[1].second, height);  //bottom left
+      glVertex3f(corners[2].first, corners[2].second, height);//bottom right
+      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+
+      //Back
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[1].first, corners[1].second, height);        //top left
+      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
+      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
+      glVertex3f(corners[2].first, corners[2].second, height);      //top right
+
+      //Front
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[3].first, corners[3].second, height);        //top left
+      glVertex3f(corners[3].first, corners[3].second, 0.0f);  //bottom left
+      glVertex3f(corners[0].first, corners[0].second, 0.0f);//bottom right
+      glVertex3f(corners[0].first, corners[0].second, height);      //top right
+
+      //Left
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[0].first, corners[0].second, height);        //top left
+      glVertex3f(corners[0].first, corners[0].second, 0.0f);  //bottom left
+      glVertex3f(corners[1].first, corners[1].second, 0.0f);//bottom right
+      glVertex3f(corners[1].first, corners[1].second, height);      //top right
+
+      //Right
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[2].first, corners[2].second, height);        //top left
+      glVertex3f(corners[2].first, corners[2].second, 0.0f);  //bottom left
+      glVertex3f(corners[3].first, corners[3].second, 0.0f);//bottom right
+      glVertex3f(corners[3].first, corners[3].second, height);      //top right
       glEnd();
     }
   }
 
   void draw_pickups(){
     MapHandler * maphan = gamehan->get_maphan();
+    float height;
 
     glColor3f(1.0f, 1.0f, 1.0f);
 
     for(int i = 0; i < maphan->get_pickups_count(); ++i){
       StaticObject * curr = maphan->get_pickup_by_idx(i);
+      height = curr->get_height();
       vector<POINT> corners = curr->get_corners();
-      for(int j = 0; j < corners.size(); ++j){
+      glBegin(GL_QUADS);
+      //Bottom
+      glColor3f(1.0f, 0.0f, 0.0f);
+      glVertex3f(corners[0].first, corners[0].second, 0.0f);        //top left
+      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
+      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
+      glVertex3f(corners[3].first, corners[3].second, 0.0f);      //top right
+
+      //Top
+      glColor3f(0.0f, 1.0f, 0.0f);
+      glVertex3f(corners[0].first, corners[0].second, height);        //top left
+      glVertex3f(corners[1].first, corners[1].second, height);  //bottom left
+      glVertex3f(corners[2].first, corners[2].second, height);//bottom right
+      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+
+      //Back
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[1].first, corners[1].second, height);        //top left
+      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
+      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
+      glVertex3f(corners[2].first, corners[2].second, height);      //top right
+
+      //Front
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[3].first, corners[3].second, height);        //top left
+      glVertex3f(corners[3].first, corners[3].second, 0.0f);  //bottom left
+      glVertex3f(corners[0].first, corners[0].second, 0.0f);//bottom right
+      glVertex3f(corners[0].first, corners[0].second, height);      //top right
+
+      //Left
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[0].first, corners[0].second, height);        //top left
+      glVertex3f(corners[0].first, corners[0].second, 0.0f);  //bottom left
+      glVertex3f(corners[1].first, corners[1].second, 0.0f);//bottom right
+      glVertex3f(corners[1].first, corners[1].second, height);      //top right
+
+      //Right
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[2].first, corners[2].second, height);        //top left
+      glVertex3f(corners[2].first, corners[2].second, 0.0f);  //bottom left
+      glVertex3f(corners[3].first, corners[3].second, 0.0f);//bottom right
+      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+      glEnd();
+
+      /*      for(int j = 0; j < corners.size(); ++j){
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	//draw mask for alpha blending
@@ -264,22 +389,68 @@ class ObjectDrawer{
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);
-      }
+	}*/
     }
   }
 
   void draw_enemies(){
     MapHandler * maphan = gamehan->get_maphan();
+    float height;
 
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
+    //    glEnable(GL_TEXTURE_2D);
+    //    glEnable(GL_BLEND);
   
     glColor3f(1.0f, 1.0f, 1.0f);
     for(int i = 0; i < maphan->get_enemies_count(); ++i){
       Enemy * curr = maphan->get_enemy_by_idx(i);
+      height = curr->get_height();
       vector<POINT> corners = curr->get_corners();
 
-      // draw mask for alpha blending
+      glBegin(GL_QUADS);
+      //Bottom
+      glColor3f(1.0f, 0.0f, 0.0f);
+      glVertex3f(corners[0].first, corners[0].second, 0.0f);        //top left
+      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
+      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
+      glVertex3f(corners[3].first, corners[3].second, 0.0f);      //top right
+
+      //Top
+      glColor3f(0.0f, 1.0f, 0.0f);
+      glVertex3f(corners[0].first, corners[0].second, height);        //top left
+      glVertex3f(corners[1].first, corners[1].second, height);  //bottom left
+      glVertex3f(corners[2].first, corners[2].second, height);//bottom right
+      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+
+      //Back
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[1].first, corners[1].second, height);        //top left
+      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
+      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
+      glVertex3f(corners[2].first, corners[2].second, height);      //top right
+
+      //Front
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[3].first, corners[3].second, height);        //top left
+      glVertex3f(corners[3].first, corners[3].second, 0.0f);  //bottom left
+      glVertex3f(corners[0].first, corners[0].second, 0.0f);//bottom right
+      glVertex3f(corners[0].first, corners[0].second, height);      //top right
+
+      //Left
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[0].first, corners[0].second, height);        //top left
+      glVertex3f(corners[0].first, corners[0].second, 0.0f);  //bottom left
+      glVertex3f(corners[1].first, corners[1].second, 0.0f);//bottom right
+      glVertex3f(corners[1].first, corners[1].second, height);      //top right
+
+      //Right
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[2].first, corners[2].second, height);        //top left
+      glVertex3f(corners[2].first, corners[2].second, 0.0f);  //bottom left
+      glVertex3f(corners[3].first, corners[3].second, 0.0f);//bottom right
+      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+      glEnd();
+
+ /*      // draw mask for alpha blending
       if(curr->get_flare_shown() > 0)
 	draw_mask(ENEMY_FIRING_MASK, corners);
       else
@@ -307,7 +478,7 @@ class ObjectDrawer{
 	if(curr->get_flare_shown() > 0)
 	  glBindTexture(GL_TEXTURE_2D, textures[ENEMY_DAMAGE3_FIRING]);
 	else
-	  glBindTexture(GL_TEXTURE_2D, textures[ENEMY_DAMAGE3]);
+	glBindTexture(GL_TEXTURE_2D, textures[ENEMY_DAMAGE3]);
 
       glBegin(GL_QUADS);
       glTexCoord2f(1.0f, 0.0f);
@@ -318,24 +489,71 @@ class ObjectDrawer{
       glVertex3f(corners[2].first, corners[2].second, 0.0f);
       glTexCoord2f(1.0f, 1.0f);
       glVertex3f(corners[3].first, corners[3].second, 0.0f);
-      glEnd();
+      glEnd();*/
     }
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
+    //    glDisable(GL_TEXTURE_2D);
+    //glDisable(GL_BLEND);
   }
 
   void draw_projectiles(){
     MapHandler * maphan = gamehan->get_maphan();
-    glEnable(GL_TEXTURE_2D);
+    float height;
+    /*    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, textures[BULLET]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);*/
     glColor3f(1.0f, 0.56863f, 0.0f);
   
     for(int i = 0; i < maphan->get_projectiles_count(); ++i){
       Projectile * curr = maphan->get_projectile_by_idx(i);
+      height = curr->get_height();
       vector<POINT> corners = curr->get_corners();
+
       glBegin(GL_QUADS);
+      //Bottom
+      glColor3f(1.0f, 0.0f, 0.0f);
+      glVertex3f(corners[0].first, corners[0].second, 0.0f);        //top left
+      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
+      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
+      glVertex3f(corners[3].first, corners[3].second, 0.0f);      //top right
+
+      //Top
+      glColor3f(0.0f, 1.0f, 0.0f);
+      glVertex3f(corners[0].first, corners[0].second, height);        //top left
+      glVertex3f(corners[1].first, corners[1].second, height);  //bottom left
+      glVertex3f(corners[2].first, corners[2].second, height);//bottom right
+      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+
+      //Back
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[1].first, corners[1].second, height);        //top left
+      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
+      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
+      glVertex3f(corners[2].first, corners[2].second, height);      //top right
+
+      //Front
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[3].first, corners[3].second, height);        //top left
+      glVertex3f(corners[3].first, corners[3].second, 0.0f);  //bottom left
+      glVertex3f(corners[0].first, corners[0].second, 0.0f);//bottom right
+      glVertex3f(corners[0].first, corners[0].second, height);      //top right
+
+      //Left
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[0].first, corners[0].second, height);        //top left
+      glVertex3f(corners[0].first, corners[0].second, 0.0f);  //bottom left
+      glVertex3f(corners[1].first, corners[1].second, 0.0f);//bottom right
+      glVertex3f(corners[1].first, corners[1].second, height);      //top right
+
+      //Right
+      glColor3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(corners[2].first, corners[2].second, height);        //top left
+      glVertex3f(corners[2].first, corners[2].second, 0.0f);  //bottom left
+      glVertex3f(corners[3].first, corners[3].second, 0.0f);//bottom right
+      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+      glEnd();
+
+      /*    glBegin(GL_QUADS);
       glTexCoord2f(1.0f, 0.0f);
       glVertex3f(corners[0].first, corners[0].second, 0.0f);
       glTexCoord2f(0.0f, 0.0f);
@@ -344,9 +562,9 @@ class ObjectDrawer{
       glVertex3f(corners[2].first, corners[2].second, 0.0f);
       glTexCoord2f(1.0f, 1.0f);
       glVertex3f(corners[3].first, corners[3].second, 0.0f);
-      glEnd();
+      glEnd();*/
     }
-    glDisable(GL_TEXTURE_2D);
+    //    glDisable(GL_TEXTURE_2D);
   }
 
   void draw_lifebar(){

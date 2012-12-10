@@ -150,6 +150,7 @@ int main(int argc, char **argv) {
 
   playerhan = new PlayerHandler(PLAYER_STARTING_X,
 				PLAYER_STARTING_Y,
+				PLAYER_HEIGHT,
 				PLAYER_MAX_SPEED,
 				PLAYER_ACCELERATION,
 				PLAYER_FRICTION,
