@@ -60,15 +60,19 @@ const float GROUND_LEVEL = 0.0f;
 /********** CAMERA CONSTANTS **********/
 const float UP_X = 0.0f;
 const float UP_Y = 0.5f;
-const float UP_Z = 0.0f;
+const float UP_Z = 0.2f;
 const float CENTER_DIFF_X = 0.0f;
-const float DEFAULT_CAMERA_DISTANCE = -2.0f;
-const float MIN_CAMERA_DISTANCE = -2.0f;
-const float MAX_CAMERA_DISTANCE = -10.0f;
+const float DEFAULT_CAMERA_DISTANCE = -10.0f;
+const float MIN_CAMERA_DISTANCE = -4.0f;
+const float MAX_CAMERA_DISTANCE = -15.0f;
 const float CAMERA_HEIGHT = 10.0f;
-const float CAMERA_MAX_SPEED = 0.01f;
-const float CAMERA_ACCELERATION = 0.00015f;
+const float CAMERA_MAX_SPEED = 0.1f;
+const float CAMERA_ACCELERATION = 0.0003f;
 const float CAMERA_FRICTION = 0.000005f;
+//camera plane is upside-down
+const float CAMERA_STARTING_ANGLE = 90.0f;
+const float CAMERA_TURNING_SPEED = 0.6f;
+const float CAMERA_RESET_TIME = 500.0f;
 
 /********** PICKUP CONSTANTS **********/
 const float PICKUP_SIZE = 0.5f;

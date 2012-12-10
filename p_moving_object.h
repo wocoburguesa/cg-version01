@@ -205,12 +205,24 @@ class MovingObject : public Object{
 
   void turn_left(){
     angle = (angle + PLAYER_TURNING_SPEED);
+    if(angle >= 360.0f)
+      angle -= 360.0f;
+    else if(angle < 0.0f)
+      angle += 360.0f;
+    else;
+
     mov_vector.x = cos(angle*PI/180);
     mov_vector.y = sin(angle*PI/180);
   }
 
   void turn_right(){
     angle = (angle - PLAYER_TURNING_SPEED);
+    if(angle >= 360.0f)
+      angle -= 360.0f;
+    else if(angle < 0.0f)
+      angle += 360.0f;
+    else;
+
     mov_vector.x = cos(angle*PI/180);
     mov_vector.y = sin(angle*PI/180);
   }

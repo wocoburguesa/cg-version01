@@ -69,8 +69,8 @@ class PlayerHandler : public MovingObject{
     pushed[0] = pushed[1] = pushed[2] = pushed[3] = 0;
 
     // setting initial movement vector
-    mov_vector = Point2D(cos(angle*PI/180),
-			 sin(angle*PI/180));
+    mov_vector = Point2D(cos(angle*PI/180.0f),
+			 sin(angle*PI/180.0f));
 
     // setting initial corners
     corners.push_back(Point3D(0.0f, 0.0f, 0.0f));

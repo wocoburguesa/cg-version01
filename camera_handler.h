@@ -16,10 +16,12 @@ class CameraHandler{
   Point3D focus_point;
   Point3D up_vector;
 
+  float reset_time;
   float camera_distance;
   float friction_constant;
   float current_friction;
   float acceleration;
+  float angle;
   float speed;
   float max_speed;
   bool * pushed;
@@ -52,6 +54,12 @@ class CameraHandler{
 
     // setting rate of speed increase
     acceleration = CAMERA_ACCELERATION;
+
+    //angle
+    angle = CAMERA_STARTING_ANGLE;
+
+    //angle
+    reset_time = CAMERA_RESET_TIME;
   }
 
   Point3D get_center(){ return center; };
@@ -59,10 +67,10 @@ class CameraHandler{
   Point3D get_up(){ return up_vector; };
 
   /********** BUTTON PRESS CONTROLLERS **********/
-  void push_forward(){ pushed[0] = 1; };
-  void push_back(){ pushed[2] = 1; };
-  void push_left(){ pushed[1] = 1; };
-  void push_right(){ pushed[3] = 1; };
+  void push_forward(){ pushed[0] = 1; reset_time = CAMERA_RESET_TIME; };
+  void push_back(){ pushed[2] = 1; reset_time = CAMERA_RESET_TIME; };
+  void push_left(){ pushed[1] = 1; reset_time = CAMERA_RESET_TIME; };
+  void push_right(){ pushed[3] = 1; reset_time = CAMERA_RESET_TIME; };
 
   void release_forward(){ pushed[0] = 0; speed = 0; };
   void release_back(){ pushed[2] = 0; speed = 0; };
@@ -80,6 +88,26 @@ class CameraHandler{
   void update(){
     process_friction();
     update_position();
+    if(angle >= 360.0f)
+      angle -= 360.0f;
+    else if(angle < 0.0f)
+      angle += 360.0f;
+    else;
+
+    if(reset_time > 0){
+      reset_time--;
+    }
+    else{
+      float focus_angle = focus_object->get_angle();
+      cout << "angle vs focus_angle: " << angle << " " << focus_angle << endl;
+      if(abs(angle - focus_angle) > 0.6f)
+	if(abs(angle - CAMERA_TURNING_SPEED - focus_angle) >
+	   abs(angle + CAMERA_TURNING_SPEED - focus_angle))
+	  move_right();
+	else
+	  move_left();
+    }
+
     if(pushed[0]){
       if(speed < 0.0f)
 	current_friction = friction_constant*5;
@@ -97,23 +125,29 @@ class CameraHandler{
 	move_back();
       }
     else;
+    if(pushed[1])
+      move_left();
+    else;
+    if(pushed[3])
+      move_right();
+    else;
   }
 
   void update_position(){
-    up_vector = Point3D(focus_object->get_mov_vector().x,
-			focus_object->get_mov_vector().y,
-			UP_Z);
-
-    focus_point = Point3D(focus_object->get_center().x,
-			  focus_object->get_center().y,
-			  focus_object->get_center().z);
-
-    // cambiar CENTER_DIFF_Y a camera distance o algo
     Point3D focus_center = focus_object->get_center();
     Point2D focus_vector = focus_object->get_mov_vector();
-    center = Point3D(focus_center.x + focus_vector.x*camera_distance,
-		     focus_center.y + focus_vector.y*camera_distance,
-		     focus_center.z + CAMERA_HEIGHT - camera_distance*0.8f);
+    float sine = sin(angle*PI/180.0f);
+    float cosine = cos(angle*PI/180.0f);
+    
+    up_vector = Point3D(cosine, sine, UP_Z);
+
+    focus_point.x = focus_center.x + cosine * 5.0f;
+    focus_point.y = focus_center.y + sine * 5.0f;
+    
+    // cambiar CENTER_DIFF_Y a camera distance o algo
+    center = Point3D(focus_center.x + (cosine*camera_distance),
+		     focus_center.y + (sine*camera_distance),
+		     focus_center.z + CAMERA_HEIGHT + camera_distance*0.3f);
   }
 
   /********** MOVEMENT HANDLERS **********/
@@ -143,6 +177,14 @@ class CameraHandler{
     else
       speed = 0.0f;
     update_position();
+  }
+
+  void move_left(){
+    angle += CAMERA_TURNING_SPEED;
+  }
+
+  void move_right(){
+    angle -= CAMERA_TURNING_SPEED;
   }
   /********** MOVEMENT HANDLERS **********/
 

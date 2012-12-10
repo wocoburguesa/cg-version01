@@ -123,9 +123,9 @@ void special_key_handler(int key, int x, int y) {
   case GLUT_KEY_DOWN :
     camera->push_back(); break;
   case GLUT_KEY_LEFT :
-    playerhan->push_left(); break;
+    camera->push_left(); break;
   case GLUT_KEY_RIGHT : 
-    playerhan->push_right(); break;
+    camera->push_right(); break;
     /*  case GLUT_KEY_SPACE : 
 	playerhan->push_space(); break;*/
   }
@@ -151,9 +151,9 @@ void special_release_handler(int key, int x, int y) {
   case GLUT_KEY_DOWN :
     camera->release_back(); break;;
   case GLUT_KEY_LEFT :
-    playerhan->release_left(); break;
+    camera->release_left(); break;
   case GLUT_KEY_RIGHT : 
-    playerhan->release_right(); break;
+    camera->release_right(); break;
   }
 }
 
