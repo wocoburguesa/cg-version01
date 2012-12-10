@@ -56,7 +56,7 @@ class MapHandler{
   /********** SETTERS **********/
 
   /********** OBJECT CREATORS **********/
-  void add_static_object(vector< pair<float, float> > &c,
+  void add_static_object(vector<Point3D> &c,
 			 float height,
 			 bool is_pickup){
     StaticObject * new_object = new StaticObject(c, height, is_pickup);
@@ -67,16 +67,20 @@ class MapHandler{
   }
 
   void add_pickup(MovingObject * dropper){
-    POINT center = dropper->get_x_y();
-    vector<POINT> corners;
-    corners.push_back(pair<float, float>(center.first-PICKUP_SIZE,
-					 center.second+PICKUP_SIZE));
-    corners.push_back(pair<float, float>(center.first-PICKUP_SIZE,
-					 center.second-PICKUP_SIZE));
-    corners.push_back(pair<float, float>(center.first+PICKUP_SIZE,
-					 center.second-PICKUP_SIZE));
-    corners.push_back(pair<float, float>(center.first+PICKUP_SIZE,
-					 center.second+PICKUP_SIZE));
+    Point3D center = dropper->get_center();
+    vector<Point3D> corners;
+    corners.push_back(Point3D(center.x-PICKUP_SIZE,
+			      center.y+PICKUP_SIZE,
+			      GROUND_LEVEL));
+    corners.push_back(Point3D(center.x-PICKUP_SIZE,
+			      center.y-PICKUP_SIZE,
+			      GROUND_LEVEL));
+    corners.push_back(Point3D(center.x+PICKUP_SIZE,
+			      center.y-PICKUP_SIZE,
+			      GROUND_LEVEL));
+    corners.push_back(Point3D(center.x+PICKUP_SIZE,
+			      center.y+PICKUP_SIZE,
+			      GROUND_LEVEL));
 
     add_static_object(corners, PICKUP_HEIGHT, 1);
   }
@@ -106,29 +110,40 @@ class MapHandler{
   /********** OBJECT CREATORS **********/
 
   /********** UTLILITY FUNCTIONS **********/
-  float distance(POINT a, POINT b){
-    return sqrt((a.first - b.first)*(a.first - b.first) +
-		(a.second - b.second)*(a.second - b.second));
+  float distance(Point2D a, Point2D b){
+    return sqrt((a.x - b.x)*(a.x - b.x) +
+		(a.y - b.y)*(a.y - b.y));
   }
 
-  POINT get_line_equation(POINT a, POINT b){
+  float distance(Point3D a, Point3D b){
+    return sqrt((a.x - b.x)*(a.x - b.x) +
+		(a.y - b.y)*(a.y - b.y) +
+		(a.z - b.z)*(a.z - b.z));
+  }
+
+  float two_d_distance(Point3D a, Point3D b){
+    return sqrt((a.x - b.x)*(a.x - b.x) +
+		(a.y - b.y)*(a.y - b.y));
+  }
+
+  Equation get_line_equation(Point3D a, Point3D b){
     float slope, intercept;
-    slope = (a.second - b.second)/(a.first - b.first);
-    intercept = a.second - slope * a.first;
-    return POINT(slope, intercept);
+    slope = (a.y - b.y)/(a.x - b.x);
+    intercept = a.y - slope * a.x;
+    return Equation(slope, intercept);
   }
 
-  bool point_in_line(POINT p, POINT l1, POINT l2){
+  bool point_in_line(Point3D p, Equation l1, Equation l2){
 
   }
   /********** UTLILITY FUNCTIONS **********/
 
   /********** COLLISION DETECTORS **********/
-  bool check_for_collision(vector<POINT> active,
-			   vector<POINT> passive,
-			   vector<POINT> equations){
+  bool check_for_collision(vector<Point3D> active,
+			   vector<Point3D> passive,
+			   vector<Equation> equations){
     float slope, intercept, xi, yi;
-    POINT equation;
+    Equation equation;
     /*
       slope = slope for equation of a side of the moving object
       intercept = intercept for equation of a side of the moving object
@@ -137,81 +152,81 @@ class MapHandler{
 
     //front
     equation = get_line_equation(active[0], active[3]);
-    slope = equation.first;
-    intercept = equation.second;
+    slope = equation.slope;
+    intercept = equation.intercept;
 
     for(int i = 0; i < equations.size(); ++i){
-      if(equations[i].second == INF)
-	xi = equations[i].first;
+      if(equations[i].intercept == INF)
+	xi = equations[i].slope;
       else
-	xi = (equations[i].second - intercept)/(slope - equations[i].first);
+	xi = (equations[i].intercept - intercept)/(slope - equations[i].slope);
       yi = slope * xi + intercept;
-      if((xi - passive[i].first)*
-	 (xi - passive[(i+1)%passive.size()].first) <= 0 &&
-	 (yi - passive[i].second)*
-	 (yi - passive[(i+1)%passive.size()].second) <= 0 &&
-	 (xi - active[0].first)*(xi - active[3].first) <= 0 &&
-	 (yi - active[0].second)*(yi - active[3].second) <= 0)
+      if((xi - passive[i].x)*
+	 (xi - passive[(i+1)%passive.size()].x) <= 0 &&
+	 (yi - passive[i].y)*
+	 (yi - passive[(i+1)%passive.size()].y) <= 0 &&
+	 (xi - active[0].x)*(xi - active[3].x) <= 0 &&
+	 (yi - active[0].y)*(yi - active[3].y) <= 0)
 	return 1;
     }
 
     //right
     equation = get_line_equation(active[2], active[3]);
-    slope = equation.first;
-    intercept = equation.second;
+    slope = equation.slope;
+    intercept = equation.intercept;
 
     for(int i = 0; i < equations.size(); ++i){
-      if(equations[i].second == INF)
-	xi = equations[i].first;
+      if(equations[i].intercept == INF)
+	xi = equations[i].slope;
       else
-	xi = (equations[i].second - intercept)/(slope - equations[i].first);
+	xi = (equations[i].intercept - intercept)/(slope - equations[i].slope);
       yi = slope * xi + intercept;
-      if((xi - passive[i].first)*
-	 (xi - passive[(i+1)%passive.size()].first) <= 0 &&
-	 (yi - passive[i].second)*
-	 (yi - passive[(i+1)%passive.size()].second) <= 0 &&
-	 (xi - active[2].first)*(xi - active[3].first) <= 0 &&
-	 (yi - active[2].second)*(yi - active[3].second) <= 0)
+      if((xi - passive[i].x)*
+	 (xi - passive[(i+1)%passive.size()].x) <= 0 &&
+	 (yi - passive[i].y)*
+	 (yi - passive[(i+1)%passive.size()].y) <= 0 &&
+	 (xi - active[2].x)*(xi - active[3].x) <= 0 &&
+	 (yi - active[2].y)*(yi - active[3].y) <= 0)
 	return 1;
     }
 
     //left
     equation = get_line_equation(active[0], active[1]);
-    slope = equation.first;
-    intercept = equation.second;
+    slope = equation.slope;
+    intercept = equation.intercept;
 
     for(int i = 0; i < equations.size(); ++i){
-      if(equations[i].second == INF)
-	xi = equations[i].first;
+      if(equations[i].intercept == INF)
+	xi = equations[i].slope;
       else
-	xi = (equations[i].second - intercept)/(slope - equations[i].first);
+	xi = (equations[i].intercept - intercept)/(slope - equations[i].slope);
       yi = slope * xi + intercept;
-      if((xi - passive[i].first)*
-	 (xi - passive[(i+1)%passive.size()].first) <= 0 &&
-	 (yi - passive[i].second)*
-	 (yi - passive[(i+1)%passive.size()].second) <= 0 &&
-	 (xi - active[0].first)*(xi - active[1].first) <= 0 &&
-	 (yi - active[0].second)*(yi - active[1].second) <= 0)
+      if((xi - passive[i].x)*
+	 (xi - passive[(i+1)%passive.size()].x) <= 0 &&
+	 (yi - passive[i].y)*
+	 (yi - passive[(i+1)%passive.size()].y) <= 0 &&
+	 (xi - active[0].x)*(xi - active[1].x) <= 0 &&
+	 (yi - active[0].y)*(yi - active[1].y) <= 0)
 	return 1;
     }
 
     //back
     equation = get_line_equation(active[1], active[2]);
-    slope = equation.first;
-    intercept = equation.second;
+    slope = equation.slope;
+    intercept = equation.intercept;
 
     for(int i = 0; i < equations.size(); ++i){
-      if(equations[i].second == INF)
-	xi = equations[i].first;
+      if(equations[i].intercept == INF)
+	xi = equations[i].slope;
       else
-	xi = (equations[i].second - intercept)/(slope - equations[i].first);
+	xi = (equations[i].intercept - intercept)/(slope - equations[i].slope);
       yi = slope * xi + intercept;
-      if((xi - passive[i].first)*
-	 (xi - passive[(i+1)%passive.size()].first) <= 0 &&
-	 (yi - passive[i].second)*
-	 (yi - passive[(i+1)%passive.size()].second) <= 0 &&
-	 (xi - active[1].first)*(xi - active[2].first) <= 0 &&
-	 (yi - active[1].second)*(yi - active[2].second) <= 0)
+      if((xi - passive[i].x)*
+	 (xi - passive[(i+1)%passive.size()].x) <= 0 &&
+	 (yi - passive[i].y)*
+	 (yi - passive[(i+1)%passive.size()].y) <= 0 &&
+	 (xi - active[1].x)*(xi - active[2].x) <= 0 &&
+	 (yi - active[1].y)*(yi - active[2].y) <= 0)
 	return 1;
     }
     return 0;
@@ -219,7 +234,7 @@ class MapHandler{
 
   void check_moving_vs_static_collisions(){
     for(int i = 0; i < buildings.size(); ++i){
-      if(distance(player->get_x_y(), buildings[i]->get_x_y()) <=
+      if(two_d_distance(player->get_center(), buildings[i]->get_center()) <=
 	 (player->get_radius() + buildings[i]->get_radius())){
 	if(check_for_collision(player->get_corners(),
 			       buildings[i]->get_corners(),
@@ -232,7 +247,8 @@ class MapHandler{
 
     for(int i = 0; i < enemies.size(); ++i)
       for(int j = 0; j < enemies.size(); ++j){
-	if(distance(enemies[i]->get_x_y(), buildings[j]->get_x_y()) <=
+	if(two_d_distance(enemies[i]->get_center(),
+			  buildings[j]->get_center()) <=
 	   (enemies[i]->get_radius() + buildings[j]->get_radius())){
 	  if(check_for_collision(enemies[i]->get_corners(),
 				 buildings[j]->get_corners(),
@@ -243,7 +259,8 @@ class MapHandler{
 
     for(int i = 0; i < enemies.size(); ++i)
       for(int j = 0; j < buildings.size(); ++j){
-	if(distance(enemies[i]->get_x_y(), buildings[j]->get_x_y()) <=
+	if(two_d_distance(enemies[i]->get_center(),
+			  buildings[j]->get_center()) <=
 	   (enemies[i]->get_radius() + buildings[j]->get_radius())){
 	  if(check_for_collision(enemies[i]->get_corners(),
 				 buildings[j]->get_corners(),
@@ -255,7 +272,7 @@ class MapHandler{
   
   void check_moving_vs_moving_collisions(){
     for(int i = 0; i < enemies.size(); ++i){
-      if(distance(player->get_x_y(), enemies[i]->get_x_y()) <=
+      if(two_d_distance(player->get_center(), enemies[i]->get_center()) <=
 	 (player->get_radius() + enemies[i]->get_radius())){
 	if(check_for_collision(player->get_corners(),
 			       enemies[i]->get_corners(),
@@ -267,7 +284,7 @@ class MapHandler{
     }
 
     for(int i = 0; i < enemies.size(); ++i){
-      if(distance(player->get_x_y(), enemies[i]->get_x_y()) <=
+      if(two_d_distance(player->get_center(), enemies[i]->get_center()) <=
 	 (player->get_radius() + enemies[i]->get_radius())){
 	if(check_for_collision(enemies[i]->get_corners(),
 			       player->get_corners(),
@@ -279,7 +296,8 @@ class MapHandler{
     for(int i = 0; i < enemies.size(); ++i)
       for(int j = 0; j < enemies.size(); ++j){
 	if(i != j)
-	  if(distance(enemies[i]->get_x_y(), enemies[j]->get_x_y()) <=
+	  if(two_d_distance(enemies[i]->get_center(),
+			    enemies[j]->get_center()) <=
 	     (enemies[i]->get_radius() + enemies[j]->get_radius())){
 	    if(check_for_collision(enemies[i]->get_corners(),
 				   enemies[j]->get_corners(),
@@ -293,7 +311,8 @@ class MapHandler{
     for(int i = 0; i < projectiles.size();){
       Projectile * current = projectiles[i];
       for(int j = 0; j < enemies.size(); ++j){
-	if(distance(projectiles[i]->get_x_y(), enemies[j]->get_x_y()) <=
+	if(two_d_distance(projectiles[i]->get_center(),
+			  enemies[j]->get_center()) <=
 	   (projectiles[i]->get_radius() + enemies[j]->get_radius())){
 	  if(check_for_collision(projectiles[i]->get_corners(),
 				 enemies[j]->get_corners(),
@@ -312,12 +331,12 @@ class MapHandler{
     for(int i = 0; i < projectiles.size();){
       Projectile * current = projectiles[i];
       for(int j = 0; j < buildings.size(); ++j){
-	if(distance(projectiles[i]->get_x_y(), buildings[j]->get_x_y()) <=
+	if(two_d_distance(projectiles[i]->get_center(),
+		       buildings[j]->get_center()) <=
 	   (projectiles[i]->get_radius() + buildings[j]->get_radius())){
 	  if(check_for_collision(projectiles[i]->get_corners(),
 				 buildings[j]->get_corners(),
 				 buildings[j]->get_equations())){
-	  cout << "wtf" << endl;
 	  projectiles.erase(projectiles.begin()+i);
 	  delete current;
 	  break;
@@ -330,7 +349,7 @@ class MapHandler{
 
     for(int i = 0; i < projectiles.size();){
       Projectile * current = projectiles[i];
-      if(distance(projectiles[i]->get_x_y(), player->get_x_y()) <=
+      if(two_d_distance(projectiles[i]->get_center(), player->get_center()) <=
 	 (projectiles[i]->get_radius() + player->get_radius())){
 	if(check_for_collision(projectiles[i]->get_corners(),
 			       player->get_corners(),
@@ -350,12 +369,11 @@ class MapHandler{
   void check_player_pickups(){
     for(int i = 0; i < pickups.size(); ){
       StaticObject * current = pickups[i];
-      if(distance(player->get_x_y(), pickups[i]->get_x_y()) <=
+      if(two_d_distance(player->get_center(), pickups[i]->get_center()) <=
 	 (player->get_radius() + pickups[i]->get_radius())){
 	if(check_for_collision(player->get_corners(),
 			       pickups[i]->get_corners(),
 			       pickups[i]->get_equations())){
-	  cout << "chau" << endl;
 	  pickups.erase(pickups.begin()+i);
 	  register_pickup = 1;
 	  delete current;
@@ -393,7 +411,8 @@ class MapHandler{
     player->update();
     for(int i = 0; i < enemies.size(); ++i){
       enemies[i]->update();
-      enemies[i]->go_to(player->get_x_y());
+      Point3D p_center = player->get_center();
+      enemies[i]->go_to(Point2D(p_center.x, p_center.y));
     }
     for(int i = 0; i < projectiles.size(); ++i)
       projectiles[i]->update();

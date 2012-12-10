@@ -10,24 +10,29 @@ using namespace std;
 
 class Object{
  protected:
-  float x;
-  float y;
+  Point3D center;
   float height;
   float radius;
-  vector<POINT> corners;
-  vector<POINT> equations;
+  vector<Point3D> corners;
+  vector<Equation> equations;
 
  public:
-  POINT get_x_y(){ return POINT(x, y); };
+  Point3D get_center(){ return center; };
   float get_height(){ return height; };
   float get_radius(){ return radius; };
 
-  vector< POINT > get_corners(){ return corners; };
-  vector<POINT> get_equations(){ return equations; };
+  vector<Point3D> get_corners(){ return corners; };
+  vector<Equation> get_equations(){ return equations; };
 
-  float distance(POINT a, POINT b){
-    return sqrt((a.first - b.first)*(a.first - b.first) +
-		(a.second - b.second)*(a.second - b.second));
+  float distance(Point3D a, Point3D b){
+    return sqrt((a.x - b.x)*(a.x - b.x) +
+		(a.y - b.y)*(a.y - b.y) +
+		(a.z - b.z)*(a.z - b.z));
+  }
+
+  float distance(Point2D a, Point2D b){
+    return sqrt((a.x - b.x)*(a.x - b.x) +
+		(a.y - b.y)*(a.y - b.y));
   }
 };
 

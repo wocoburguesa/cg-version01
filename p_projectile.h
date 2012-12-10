@@ -19,8 +19,7 @@ class Projectile : public MovingObject{
 	     float size,
 	     float ang=90.0f){
     // setting initial position
-    x = x_init;
-    y = y_init;
+    center = Point3D(x_init, y_init, hght/2.0f);
 
     //setting height
     height = hght;
@@ -41,14 +40,14 @@ class Projectile : public MovingObject{
     angle = ang;
 
     // setting initial movement vector
-    mov_vector = POINT(cos(angle*PI/180),
-		       sin(angle*PI/180));
+    mov_vector = Point2D(cos(angle*PI/180),
+			 sin(angle*PI/180));
 
     // setting initial corners
-    corners.push_back(POINT(0.0f, 0.0f));
-    corners.push_back(POINT(0.0f, 0.0f));
-    corners.push_back(POINT(0.0f, 0.0f));
-    corners.push_back(POINT(0.0f, 0.0f));
+    corners.push_back(Point3D(0.0f, 0.0f, 0.0f));
+    corners.push_back(Point3D(0.0f, 0.0f, 0.0f));
+    corners.push_back(Point3D(0.0f, 0.0f, 0.0f));
+    corners.push_back(Point3D(0.0f, 0.0f, 0.0f));
     set_top_left();
     set_bottom_left();
     set_bottom_right();
@@ -57,17 +56,17 @@ class Projectile : public MovingObject{
     // setting initial equations
     for(int i = 0; i < corners.size(); ++i){
       float slope, intercept, x1, y1, x2, y2;
-      x1 = corners[i].first;
-      y1 = corners[i].second;
-      x2 = corners[(i+1)%corners.size()].first;
-      y2 = corners[(i+1)%corners.size()].second;
+      x1 = corners[i].x;
+      y1 = corners[i].y;
+      x2 = corners[(i+1)%corners.size()].x;
+      y2 = corners[(i+1)%corners.size()].y;
       if(x1 != x2){
 	slope = (y1 - y2)/(x1 - x2);
 	intercept = y1 - slope * x1;
-	equations.push_back(pair<float, float>(slope, intercept));
+	equations.push_back(Equation(slope, intercept));
       }
       else{
-	equations.push_back(pair<float, float>(x1, INF));
+	equations.push_back(Equation(x1, INF));
       }
     }
   }

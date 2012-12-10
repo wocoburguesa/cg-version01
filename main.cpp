@@ -7,19 +7,20 @@
 #include <GL/glut.h>
 #endif
 #include "game_handler.h"
+#include "camera_handler.h"
 #include "drawer.h"
 #include "SOIL.h"
 
 GameHandler * gamehan;
 PlayerHandler * playerhan;
 ObjectDrawer * drawer;
+CameraHandler * camera;
 
 float camera_distance;
 
 float game_over_billboard_distance;
 
 void changeSize(int w, int h) {
-
   // Prevent a divide by zero, when window is too short
   // (you cant make a window of zero width).
   if (h == 0)
@@ -45,19 +46,31 @@ void changeSize(int w, int h) {
 void renderScene(void){
   // Clear Color and Depth Buffers
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glEnable(GL_DEPTH_TEST);
 
   glMatrixMode(GL_MODELVIEW);
   // Reset transformations
   glLoadIdentity();
  
-  float player_x = playerhan->get_x_y().first;
-  float player_y = playerhan->get_x_y().second;
+  float player_x = playerhan->get_center().x;
+  float player_y = playerhan->get_center().y;
   // Set the camera
-  gluLookAt(player_x, player_y, camera_distance,
+  /*  gluLookAt(player_x, player_y, camera_distance,
 	    player_x, player_y,  0.0f,
-	    0.0f, 1.0f,  0.0f);
+	    0.0f, 1.0f,  0.0f);*/
+
+  gluLookAt(camera->get_center().x,
+	    camera->get_center().y,
+	    camera->get_center().z,
+	    camera->get_focus().x,
+	    camera->get_focus().y,
+	    camera->get_focus().z,
+	    camera->get_up().x,
+	    camera->get_up().y,
+	    camera->get_up().z);
 
   gamehan->update();
+  camera->update();
 
   drawer->draw_floor();
   drawer->draw_player();
@@ -106,9 +119,9 @@ void special_key_handler(int key, int x, int y) {
     return;
   switch(key){
   case GLUT_KEY_UP :
-    camera_distance--; break;
+    camera->push_forward(); break;
   case GLUT_KEY_DOWN :
-    camera_distance++; break;
+    camera->push_back(); break;
   case GLUT_KEY_LEFT :
     playerhan->push_left(); break;
   case GLUT_KEY_RIGHT : 
@@ -134,9 +147,9 @@ void normal_release_handler(unsigned char key, int x, int y) {
 void special_release_handler(int key, int x, int y) {
   switch(key){
   case GLUT_KEY_UP :
-    break;
+    camera->release_forward(); break;
   case GLUT_KEY_DOWN :
-    break;
+    camera->release_back(); break;;
   case GLUT_KEY_LEFT :
     playerhan->release_left(); break;
   case GLUT_KEY_RIGHT : 
@@ -159,6 +172,8 @@ int main(int argc, char **argv) {
 				PLAYER_STARTING_HEALTH);
   gamehan = new GameHandler(playerhan);
   drawer = new ObjectDrawer(gamehan, playerhan);
+
+  camera = new CameraHandler(playerhan);
 
   gamehan->set_game();
 

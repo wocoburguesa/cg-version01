@@ -36,59 +36,93 @@ class GameHandler{
     items_collected = 0;
     game_condition = 0;
     player->reset_health();
-    player->set_x_y(POINT(PLAYER_STARTING_X, PLAYER_STARTING_Y));
+    player->set_center(Point3D(PLAYER_STARTING_X,
+			       PLAYER_STARTING_Y,
+			       GROUND_LEVEL));
     player->set_angle(PLAYER_STARTING_ANGLE);
 
-    vector<POINT> building;
+    vector<Point3D> building;
     /********** MAP BOUNDS **********/
-    building.push_back(pair<float, float>(-(MAP_WIDTH+1.0f),(MAP_WIDTH+1.0f)));
-    building.push_back(pair<float, float>(-(MAP_WIDTH+1.0f),-(MAP_WIDTH+1.0f)));
-    building.push_back(pair<float, float>(-MAP_WIDTH,-(MAP_WIDTH+1.0f)));
-    building.push_back(pair<float, float>(-MAP_WIDTH,(MAP_WIDTH+1.0f)));
+    building.push_back(Point3D(-(MAP_WIDTH+1.0f),
+			       (MAP_WIDTH+1.0f),
+			       GROUND_LEVEL));
+    building.push_back(Point3D(-(MAP_WIDTH+1.0f),
+			       -(MAP_WIDTH+1.0f),
+			       GROUND_LEVEL));
+    building.push_back(Point3D(-MAP_WIDTH,
+			       -(MAP_WIDTH+1.0f),
+			       GROUND_LEVEL));
+    building.push_back(Point3D(-MAP_WIDTH,
+			       (MAP_WIDTH+1.0f),
+			       GROUND_LEVEL));
     spawn_building(building);
     building.clear();
 
-    building.push_back(pair<float, float>(-MAP_WIDTH,-MAP_WIDTH));
-    building.push_back(pair<float, float>(-MAP_WIDTH,-(MAP_WIDTH+1.0f)));
-    building.push_back(pair<float, float>((MAP_WIDTH+1.0f),-(MAP_WIDTH+1.0f)));
-    building.push_back(pair<float, float>((MAP_WIDTH+1.0f),-MAP_WIDTH));
+    building.push_back(Point3D(-MAP_WIDTH,
+			       -MAP_WIDTH,
+			       GROUND_LEVEL));
+    building.push_back(Point3D(-MAP_WIDTH,
+			       -(MAP_WIDTH+1.0f),
+			       GROUND_LEVEL));
+    building.push_back(Point3D((MAP_WIDTH+1.0f),
+			       -(MAP_WIDTH+1.0f),
+			       GROUND_LEVEL));
+    building.push_back(Point3D((MAP_WIDTH+1.0f),
+			       -MAP_WIDTH,
+			       GROUND_LEVEL));
     spawn_building(building);
     building.clear();
 
-    building.push_back(pair<float, float>(MAP_WIDTH,(MAP_WIDTH+1.0f)));
-    building.push_back(pair<float, float>(MAP_WIDTH,-MAP_WIDTH));
-    building.push_back(pair<float, float>((MAP_WIDTH+1.0f),-MAP_WIDTH));
-    building.push_back(pair<float, float>((MAP_WIDTH+1.0f),(MAP_WIDTH+1.0f)));
+    building.push_back(Point3D(MAP_WIDTH,
+			       (MAP_WIDTH+1.0f),
+			       GROUND_LEVEL));
+    building.push_back(Point3D(MAP_WIDTH,
+			       -MAP_WIDTH,
+			       GROUND_LEVEL));
+    building.push_back(Point3D((MAP_WIDTH+1.0f),
+			       -MAP_WIDTH,
+			       GROUND_LEVEL));
+    building.push_back(Point3D((MAP_WIDTH+1.0f),
+			       (MAP_WIDTH+1.0f),
+			       GROUND_LEVEL));
     spawn_building(building);
     building.clear();
 
-    building.push_back(pair<float, float>(-MAP_WIDTH,(MAP_WIDTH+1.0f)));
-    building.push_back(pair<float, float>(-MAP_WIDTH,MAP_WIDTH));
-    building.push_back(pair<float, float>(MAP_WIDTH,MAP_WIDTH));
-    building.push_back(pair<float, float>(MAP_WIDTH,(MAP_WIDTH+1.0f)));
+    building.push_back(Point3D(-MAP_WIDTH,
+			       (MAP_WIDTH+1.0f),
+			       GROUND_LEVEL));
+    building.push_back(Point3D(-MAP_WIDTH,
+			       MAP_WIDTH,
+			       GROUND_LEVEL));
+    building.push_back(Point3D(MAP_WIDTH,
+			       MAP_WIDTH,
+			       GROUND_LEVEL));
+    building.push_back(Point3D(MAP_WIDTH,
+			       (MAP_WIDTH+1.0f),
+			       GROUND_LEVEL));
     spawn_building(building);
     building.clear();
     /********** MAP BOUNDS **********/
 
     /********** BUILDINGS **********/
-    building.push_back(pair<float, float>(-15.0f, -10.0f));
-    building.push_back(pair<float, float>(-15.0f, -16.0f));
-    building.push_back(pair<float, float>(-9.0f, -16.0f));
-    building.push_back(pair<float, float>(-9.0f, -10.0f));
+    building.push_back(Point3D(-15.0f, -10.0f, GROUND_LEVEL));
+    building.push_back(Point3D(-15.0f, -16.0f, GROUND_LEVEL));
+    building.push_back(Point3D(-9.0f, -16.0f, GROUND_LEVEL));
+    building.push_back(Point3D(-9.0f, -10.0f, GROUND_LEVEL));
     spawn_building(building);
     building.clear();
 
-    building.push_back(pair<float, float>(-27.0f, 16.0f));
-    building.push_back(pair<float, float>(-27.0f, 10.0f));
-    building.push_back(pair<float, float>(-21.0f, 10.0f));
-    building.push_back(pair<float, float>(-21.0f, 16.0f));
+    building.push_back(Point3D(-27.0f, 16.0f, GROUND_LEVEL));
+    building.push_back(Point3D(-27.0f, 10.0f, GROUND_LEVEL));
+    building.push_back(Point3D(-21.0f, 10.0f, GROUND_LEVEL));
+    building.push_back(Point3D(-21.0f, 16.0f, GROUND_LEVEL));
     spawn_building(building);
     building.clear();
 
-    building.push_back(pair<float, float>(16.0f, 5.0f));
-    building.push_back(pair<float, float>(16.0f, -2.0f));
-    building.push_back(pair<float, float>(23.0f, -2.0f));
-    building.push_back(pair<float, float>(23.0f, 5.0f));
+    building.push_back(Point3D(16.0f, 5.0f, GROUND_LEVEL));
+    building.push_back(Point3D(16.0f, -2.0f, GROUND_LEVEL));
+    building.push_back(Point3D(23.0f, -2.0f, GROUND_LEVEL));
+    building.push_back(Point3D(23.0f, 5.0f, GROUND_LEVEL));
     spawn_building(building);
     building.clear();
     /********** BUILDINGS **********/
@@ -124,7 +158,7 @@ class GameHandler{
     return a + diff;
   }
 
-  void spawn_building(vector<POINT> &corners){
+  void spawn_building(vector<Point3D> &corners){
     float height = get_rand_in_range(MIN_BUILDING_HEIGHT,
 				     MAX_BUILDING_HEIGHT);
 
@@ -144,13 +178,13 @@ class GameHandler{
 
   void spawn_projectile(MovingObject * shooter, float angle=-1.0f){
     if(angle == -1.0f){
-      POINT shooter_vec = shooter->get_mov_vector();
+      Point2D shooter_vec = shooter->get_mov_vector();
       float denom =
-	sqrt(shooter_vec.first*shooter_vec.first +
-	     shooter_vec.second*shooter_vec.second);
+	sqrt(shooter_vec.x*shooter_vec.x +
+	     shooter_vec.y*shooter_vec.y);
       float factor = shooter->get_radius() / denom;
-      float x = shooter->get_x_y().first + shooter_vec.first * factor;
-      float y = shooter->get_x_y().second + shooter_vec.second * factor;
+      float x = shooter->get_center().x + shooter_vec.x * factor;
+      float y = shooter->get_center().y + shooter_vec.y * factor;
       maphan->add_projectile(x, y,
 			     PROJECTILE_HEIGHT,
 			     0.0f, //max speed, overridden
@@ -161,15 +195,14 @@ class GameHandler{
     }
     else{
       float exit_ang = shooter->get_angle() + angle;
-      POINT out_vector(0.0f, 0.0f);
-      out_vector.first = cos(exit_ang*PI/180);
-      out_vector.second = sin(exit_ang*PI/180);
+      Point2D out_vector(cos(exit_ang*PI/180), sin(exit_ang*PI/180));
       float denom =
-	sqrt(out_vector.first*out_vector.first +
-	     out_vector.second*out_vector.second);
+	sqrt(out_vector.x*out_vector.x +
+	     out_vector.y*out_vector.y);
       float factor = shooter->get_radius() / denom;
-      float x = shooter->get_x_y().first + out_vector.first * factor;
-      float y = shooter->get_x_y().second + out_vector.second * factor;
+
+      float x = shooter->get_center().x + out_vector.x * factor;
+      float y = shooter->get_center().y + out_vector.y * factor;
       maphan->add_projectile(x, y,
 			     PROJECTILE_HEIGHT,
 			     0.0f, //max speed, overridden

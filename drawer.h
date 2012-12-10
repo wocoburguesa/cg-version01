@@ -170,8 +170,9 @@ class ObjectDrawer{
   void draw_player(){
     //    glEnable(GL_TEXTURE_2D);
 
-    vector<POINT> corners = playerhan->get_corners();
-    float height = playerhan->get_height();
+    vector<Point3D> corners = playerhan->get_corners();
+    float bottom = playerhan->get_center().z - playerhan->get_height()/2.0f;
+    float top = playerhan->get_center().z + playerhan->get_height()/2.0f;
 
     //    glEnable(GL_BLEND);
   
@@ -191,48 +192,48 @@ class ObjectDrawer{
     //Bottom
     glColor3f(1.0f, 0.0f, 0.0f);
     //    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(corners[0].first, corners[0].second, 0.0f);        //top left
+    glVertex3f(corners[0].x, corners[0].y, bottom);        //top left
     //    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
+    glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
     //    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
+    glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
     //    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(corners[3].first, corners[3].second, 0.0f);      //top right
+    glVertex3f(corners[3].x, corners[3].y, bottom);      //top right
 
     //Top
     glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(corners[3].first, corners[3].second, height);        //top left
-    glVertex3f(corners[2].first, corners[2].second, height);  //bottom left
-    glVertex3f(corners[1].first, corners[1].second, height);//bottom right
-    glVertex3f(corners[0].first, corners[0].second, height);      //top right
+    glVertex3f(corners[3].x, corners[3].y, top);        //top left
+    glVertex3f(corners[2].x, corners[2].y, top);  //bottom left
+    glVertex3f(corners[1].x, corners[1].y, top);//bottom right
+    glVertex3f(corners[0].x, corners[0].y, top);      //top right
 
     //Back
     glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(corners[1].first, corners[1].second, height);        //top left
-    glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
-    glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
-    glVertex3f(corners[2].first, corners[2].second, height);      //top right
+    glVertex3f(corners[1].x, corners[1].y, top);        //top left
+    glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
+    glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
+    glVertex3f(corners[2].x, corners[2].y, top);      //top right
 
     //Front
     glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(corners[3].first, corners[3].second, height);        //top left
-    glVertex3f(corners[3].first, corners[3].second, 0.0f);  //bottom left
-    glVertex3f(corners[0].first, corners[0].second, 0.0f);//bottom right
-    glVertex3f(corners[0].first, corners[0].second, height);      //top right
+    glVertex3f(corners[3].x, corners[3].y, top);        //top left
+    glVertex3f(corners[3].x, corners[3].y, bottom);  //bottom left
+    glVertex3f(corners[0].x, corners[0].y, bottom);//bottom right
+    glVertex3f(corners[0].x, corners[0].y, top);      //top right
 
     //Left
     glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(corners[0].first, corners[0].second, height);        //top left
-    glVertex3f(corners[0].first, corners[0].second, 0.0f);  //bottom left
-    glVertex3f(corners[1].first, corners[1].second, 0.0f);//bottom right
-    glVertex3f(corners[1].first, corners[1].second, height);      //top right
+    glVertex3f(corners[0].x, corners[0].y, top);        //top left
+    glVertex3f(corners[0].x, corners[0].y, bottom);  //bottom left
+    glVertex3f(corners[1].x, corners[1].y, bottom);//bottom right
+    glVertex3f(corners[1].x, corners[1].y, top);      //top right
 
     //Right
     glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(corners[2].first, corners[2].second, height);        //top left
-    glVertex3f(corners[2].first, corners[2].second, 0.0f);  //bottom left
-    glVertex3f(corners[3].first, corners[3].second, 0.0f);//bottom right
-    glVertex3f(corners[3].first, corners[3].second, height);      //top right
+    glVertex3f(corners[2].x, corners[2].y, top);        //top left
+    glVertex3f(corners[2].x, corners[2].y, bottom);  //bottom left
+    glVertex3f(corners[3].x, corners[3].y, bottom);//bottom right
+    glVertex3f(corners[3].x, corners[3].y, top);      //top right
     glEnd();
     //    glDisable(GL_TEXTURE_2D);
     //    glDisable(GL_BLEND);
@@ -265,51 +266,54 @@ class ObjectDrawer{
 
     for(int i = 0; i < maphan->get_buildings_count(); ++i){
       StaticObject * curr = maphan->get_building_by_idx(i);
-      height = curr->get_height();
-      vector<POINT> corners = curr->get_corners();
+      float bottom = curr->get_center().z - curr->get_height()/2.0f;
+      float top = curr->get_center().z + curr->get_height()/2.0f;
+
+      vector<Point3D> corners = curr->get_corners();
       glColor3f(0.7f, 0.7f, 0.7f);
+
       glBegin(GL_QUADS);
       //Bottom
       glColor3f(1.0f, 0.0f, 0.0f);
-      glVertex3f(corners[0].first, corners[0].second, 0.0f);        //top left
-      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
-      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
-      glVertex3f(corners[3].first, corners[3].second, 0.0f);      //top right
+      glVertex3f(corners[0].x, corners[0].y, bottom);        //top left
+      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
+      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
+      glVertex3f(corners[3].x, corners[3].y, bottom);      //top right
 
       //Top
       glColor3f(0.0f, 1.0f, 0.0f);
-      glVertex3f(corners[0].first, corners[0].second, height);        //top left
-      glVertex3f(corners[1].first, corners[1].second, height);  //bottom left
-      glVertex3f(corners[2].first, corners[2].second, height);//bottom right
-      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+      glVertex3f(corners[3].x, corners[3].y, top);        //top left
+      glVertex3f(corners[2].x, corners[2].y, top);  //bottom left
+      glVertex3f(corners[1].x, corners[1].y, top);//bottom right
+      glVertex3f(corners[0].x, corners[0].y, top);      //top right
 
       //Back
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[1].first, corners[1].second, height);        //top left
-      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
-      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
-      glVertex3f(corners[2].first, corners[2].second, height);      //top right
+      glVertex3f(corners[1].x, corners[1].y, top);        //top left
+      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
+      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
+      glVertex3f(corners[2].x, corners[2].y, top);      //top right
 
       //Front
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[3].first, corners[3].second, height);        //top left
-      glVertex3f(corners[3].first, corners[3].second, 0.0f);  //bottom left
-      glVertex3f(corners[0].first, corners[0].second, 0.0f);//bottom right
-      glVertex3f(corners[0].first, corners[0].second, height);      //top right
+      glVertex3f(corners[3].x, corners[3].y, top);        //top left
+      glVertex3f(corners[3].x, corners[3].y, bottom);  //bottom left
+      glVertex3f(corners[0].x, corners[0].y, bottom);//bottom right
+      glVertex3f(corners[0].x, corners[0].y, top);      //top right
 
       //Left
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[0].first, corners[0].second, height);        //top left
-      glVertex3f(corners[0].first, corners[0].second, 0.0f);  //bottom left
-      glVertex3f(corners[1].first, corners[1].second, 0.0f);//bottom right
-      glVertex3f(corners[1].first, corners[1].second, height);      //top right
+      glVertex3f(corners[0].x, corners[0].y, top);        //top left
+      glVertex3f(corners[0].x, corners[0].y, bottom);  //bottom left
+      glVertex3f(corners[1].x, corners[1].y, bottom);//bottom right
+      glVertex3f(corners[1].x, corners[1].y, top);      //top right
 
       //Right
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[2].first, corners[2].second, height);        //top left
-      glVertex3f(corners[2].first, corners[2].second, 0.0f);  //bottom left
-      glVertex3f(corners[3].first, corners[3].second, 0.0f);//bottom right
-      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+      glVertex3f(corners[2].x, corners[2].y, top);        //top left
+      glVertex3f(corners[2].x, corners[2].y, bottom);  //bottom left
+      glVertex3f(corners[3].x, corners[3].y, bottom);//bottom right
+      glVertex3f(corners[3].x, corners[3].y, top);      //top right
       glEnd();
     }
   }
@@ -322,50 +326,52 @@ class ObjectDrawer{
 
     for(int i = 0; i < maphan->get_pickups_count(); ++i){
       StaticObject * curr = maphan->get_pickup_by_idx(i);
-      height = curr->get_height();
-      vector<POINT> corners = curr->get_corners();
+      float bottom = curr->get_center().z - curr->get_height()/2.0f;
+      float top = curr->get_center().z + curr->get_height()/2.0f;
+
+      vector<Point3D> corners = curr->get_corners();
       glBegin(GL_QUADS);
       //Bottom
       glColor3f(1.0f, 0.0f, 0.0f);
-      glVertex3f(corners[0].first, corners[0].second, 0.0f);        //top left
-      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
-      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
-      glVertex3f(corners[3].first, corners[3].second, 0.0f);      //top right
+      glVertex3f(corners[0].x, corners[0].y, bottom);        //top left
+      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
+      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
+      glVertex3f(corners[3].x, corners[3].y, bottom);      //top right
 
       //Top
       glColor3f(0.0f, 1.0f, 0.0f);
-      glVertex3f(corners[0].first, corners[0].second, height);        //top left
-      glVertex3f(corners[1].first, corners[1].second, height);  //bottom left
-      glVertex3f(corners[2].first, corners[2].second, height);//bottom right
-      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+      glVertex3f(corners[3].x, corners[3].y, top);        //top left
+      glVertex3f(corners[2].x, corners[2].y, top);  //bottom left
+      glVertex3f(corners[1].x, corners[1].y, top);//bottom right
+      glVertex3f(corners[0].x, corners[0].y, top);      //top right
 
       //Back
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[1].first, corners[1].second, height);        //top left
-      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
-      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
-      glVertex3f(corners[2].first, corners[2].second, height);      //top right
+      glVertex3f(corners[1].x, corners[1].y, top);        //top left
+      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
+      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
+      glVertex3f(corners[2].x, corners[2].y, top);      //top right
 
       //Front
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[3].first, corners[3].second, height);        //top left
-      glVertex3f(corners[3].first, corners[3].second, 0.0f);  //bottom left
-      glVertex3f(corners[0].first, corners[0].second, 0.0f);//bottom right
-      glVertex3f(corners[0].first, corners[0].second, height);      //top right
+      glVertex3f(corners[3].x, corners[3].y, top);        //top left
+      glVertex3f(corners[3].x, corners[3].y, bottom);  //bottom left
+      glVertex3f(corners[0].x, corners[0].y, bottom);//bottom right
+      glVertex3f(corners[0].x, corners[0].y, top);      //top right
 
       //Left
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[0].first, corners[0].second, height);        //top left
-      glVertex3f(corners[0].first, corners[0].second, 0.0f);  //bottom left
-      glVertex3f(corners[1].first, corners[1].second, 0.0f);//bottom right
-      glVertex3f(corners[1].first, corners[1].second, height);      //top right
+      glVertex3f(corners[0].x, corners[0].y, top);        //top left
+      glVertex3f(corners[0].x, corners[0].y, bottom);  //bottom left
+      glVertex3f(corners[1].x, corners[1].y, bottom);//bottom right
+      glVertex3f(corners[1].x, corners[1].y, top);      //top right
 
       //Right
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[2].first, corners[2].second, height);        //top left
-      glVertex3f(corners[2].first, corners[2].second, 0.0f);  //bottom left
-      glVertex3f(corners[3].first, corners[3].second, 0.0f);//bottom right
-      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+      glVertex3f(corners[2].x, corners[2].y, top);        //top left
+      glVertex3f(corners[2].x, corners[2].y, bottom);  //bottom left
+      glVertex3f(corners[3].x, corners[3].y, bottom);//bottom right
+      glVertex3f(corners[3].x, corners[3].y, top);      //top right
       glEnd();
 
       /*      for(int j = 0; j < corners.size(); ++j){
@@ -403,51 +409,53 @@ class ObjectDrawer{
     glColor3f(1.0f, 1.0f, 1.0f);
     for(int i = 0; i < maphan->get_enemies_count(); ++i){
       Enemy * curr = maphan->get_enemy_by_idx(i);
-      height = curr->get_height();
-      vector<POINT> corners = curr->get_corners();
+      float bottom = curr->get_center().z - curr->get_height()/2.0f;
+      float top = curr->get_center().z + curr->get_height()/2.0f;
+
+      vector<Point3D> corners = curr->get_corners();
 
       glBegin(GL_QUADS);
       //Bottom
       glColor3f(1.0f, 0.0f, 0.0f);
-      glVertex3f(corners[0].first, corners[0].second, 0.0f);        //top left
-      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
-      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
-      glVertex3f(corners[3].first, corners[3].second, 0.0f);      //top right
+      glVertex3f(corners[0].x, corners[0].y, bottom);        //top left
+      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
+      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
+      glVertex3f(corners[3].x, corners[3].y, bottom);      //top right
 
       //Top
       glColor3f(0.0f, 1.0f, 0.0f);
-      glVertex3f(corners[0].first, corners[0].second, height);        //top left
-      glVertex3f(corners[1].first, corners[1].second, height);  //bottom left
-      glVertex3f(corners[2].first, corners[2].second, height);//bottom right
-      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+      glVertex3f(corners[3].x, corners[3].y, top);        //top left
+      glVertex3f(corners[2].x, corners[2].y, top);  //bottom left
+      glVertex3f(corners[1].x, corners[1].y, top);//bottom right
+      glVertex3f(corners[0].x, corners[0].y, top);      //top right
 
       //Back
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[1].first, corners[1].second, height);        //top left
-      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
-      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
-      glVertex3f(corners[2].first, corners[2].second, height);      //top right
+      glVertex3f(corners[1].x, corners[1].y, top);        //top left
+      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
+      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
+      glVertex3f(corners[2].x, corners[2].y, top);      //top right
 
       //Front
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[3].first, corners[3].second, height);        //top left
-      glVertex3f(corners[3].first, corners[3].second, 0.0f);  //bottom left
-      glVertex3f(corners[0].first, corners[0].second, 0.0f);//bottom right
-      glVertex3f(corners[0].first, corners[0].second, height);      //top right
+      glVertex3f(corners[3].x, corners[3].y, top);        //top left
+      glVertex3f(corners[3].x, corners[3].y, bottom);  //bottom left
+      glVertex3f(corners[0].x, corners[0].y, bottom);//bottom right
+      glVertex3f(corners[0].x, corners[0].y, top);      //top right
 
       //Left
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[0].first, corners[0].second, height);        //top left
-      glVertex3f(corners[0].first, corners[0].second, 0.0f);  //bottom left
-      glVertex3f(corners[1].first, corners[1].second, 0.0f);//bottom right
-      glVertex3f(corners[1].first, corners[1].second, height);      //top right
+      glVertex3f(corners[0].x, corners[0].y, top);        //top left
+      glVertex3f(corners[0].x, corners[0].y, bottom);  //bottom left
+      glVertex3f(corners[1].x, corners[1].y, bottom);//bottom right
+      glVertex3f(corners[1].x, corners[1].y, top);      //top right
 
       //Right
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[2].first, corners[2].second, height);        //top left
-      glVertex3f(corners[2].first, corners[2].second, 0.0f);  //bottom left
-      glVertex3f(corners[3].first, corners[3].second, 0.0f);//bottom right
-      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+      glVertex3f(corners[2].x, corners[2].y, top);        //top left
+      glVertex3f(corners[2].x, corners[2].y, bottom);  //bottom left
+      glVertex3f(corners[3].x, corners[3].y, bottom);//bottom right
+      glVertex3f(corners[3].x, corners[3].y, top);      //top right
       glEnd();
 
  /*      // draw mask for alpha blending
@@ -506,51 +514,53 @@ class ObjectDrawer{
   
     for(int i = 0; i < maphan->get_projectiles_count(); ++i){
       Projectile * curr = maphan->get_projectile_by_idx(i);
-      height = curr->get_height();
-      vector<POINT> corners = curr->get_corners();
+      float bottom = curr->get_center().z - curr->get_height()/2.0f;
+      float top = curr->get_center().z + curr->get_height()/2.0f;
+
+      vector<Point3D> corners = curr->get_corners();
 
       glBegin(GL_QUADS);
       //Bottom
       glColor3f(1.0f, 0.0f, 0.0f);
-      glVertex3f(corners[0].first, corners[0].second, 0.0f);        //top left
-      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
-      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
-      glVertex3f(corners[3].first, corners[3].second, 0.0f);      //top right
+      glVertex3f(corners[0].x, corners[0].y, bottom);        //top left
+      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
+      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
+      glVertex3f(corners[3].x, corners[3].y, bottom);      //top right
 
       //Top
       glColor3f(0.0f, 1.0f, 0.0f);
-      glVertex3f(corners[0].first, corners[0].second, height);        //top left
-      glVertex3f(corners[1].first, corners[1].second, height);  //bottom left
-      glVertex3f(corners[2].first, corners[2].second, height);//bottom right
-      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+      glVertex3f(corners[3].x, corners[3].y, top);        //top left
+      glVertex3f(corners[2].x, corners[2].y, top);  //bottom left
+      glVertex3f(corners[1].x, corners[1].y, top);//bottom right
+      glVertex3f(corners[0].x, corners[0].y, top);      //top right
 
       //Back
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[1].first, corners[1].second, height);        //top left
-      glVertex3f(corners[1].first, corners[1].second, 0.0f);  //bottom left
-      glVertex3f(corners[2].first, corners[2].second, 0.0f);//bottom right
-      glVertex3f(corners[2].first, corners[2].second, height);      //top right
+      glVertex3f(corners[1].x, corners[1].y, top);        //top left
+      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
+      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
+      glVertex3f(corners[2].x, corners[2].y, top);      //top right
 
       //Front
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[3].first, corners[3].second, height);        //top left
-      glVertex3f(corners[3].first, corners[3].second, 0.0f);  //bottom left
-      glVertex3f(corners[0].first, corners[0].second, 0.0f);//bottom right
-      glVertex3f(corners[0].first, corners[0].second, height);      //top right
+      glVertex3f(corners[3].x, corners[3].y, top);        //top left
+      glVertex3f(corners[3].x, corners[3].y, bottom);  //bottom left
+      glVertex3f(corners[0].x, corners[0].y, bottom);//bottom right
+      glVertex3f(corners[0].x, corners[0].y, top);      //top right
 
       //Left
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[0].first, corners[0].second, height);        //top left
-      glVertex3f(corners[0].first, corners[0].second, 0.0f);  //bottom left
-      glVertex3f(corners[1].first, corners[1].second, 0.0f);//bottom right
-      glVertex3f(corners[1].first, corners[1].second, height);      //top right
+      glVertex3f(corners[0].x, corners[0].y, top);        //top left
+      glVertex3f(corners[0].x, corners[0].y, bottom);  //bottom left
+      glVertex3f(corners[1].x, corners[1].y, bottom);//bottom right
+      glVertex3f(corners[1].x, corners[1].y, top);      //top right
 
       //Right
       glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[2].first, corners[2].second, height);        //top left
-      glVertex3f(corners[2].first, corners[2].second, 0.0f);  //bottom left
-      glVertex3f(corners[3].first, corners[3].second, 0.0f);//bottom right
-      glVertex3f(corners[3].first, corners[3].second, height);      //top right
+      glVertex3f(corners[2].x, corners[2].y, top);        //top left
+      glVertex3f(corners[2].x, corners[2].y, bottom);  //bottom left
+      glVertex3f(corners[3].x, corners[3].y, bottom);//bottom right
+      glVertex3f(corners[3].x, corners[3].y, top);      //top right
       glEnd();
 
       /*    glBegin(GL_QUADS);
@@ -568,8 +578,8 @@ class ObjectDrawer{
   }
 
   void draw_lifebar(){
-    float player_x = playerhan->get_x_y().first;
-    float player_y = playerhan->get_x_y().second;
+    float player_x = playerhan->get_center().x;
+    float player_y = playerhan->get_center().y;
 
     float life_left = playerhan->get_remaining_life_pct();
 
@@ -603,8 +613,8 @@ class ObjectDrawer{
   }
 
   void draw_item_counter_icon(){
-    float player_x = playerhan->get_x_y().first;
-    float player_y = playerhan->get_x_y().second;
+    float player_x = playerhan->get_center().x;
+    float player_y = playerhan->get_center().y;
 
     float x = player_x + 4.75f;
     float y = player_y + 2.25f;
@@ -642,8 +652,8 @@ class ObjectDrawer{
   }
 
   void draw_item_counter(int items){
-    float player_x = playerhan->get_x_y().first;
-    float player_y = playerhan->get_x_y().second;
+    float player_x = playerhan->get_center().x;
+    float player_y = playerhan->get_center().y;
 
     float x = player_x + 2.25f;
     float y = player_y + 2.25f;
@@ -685,8 +695,8 @@ class ObjectDrawer{
     if(game_over_billboard_distance < 12.0f)
       game_over_billboard_distance += 0.05f;
     else;
-    float player_x = playerhan->get_x_y().first;
-    float player_y = playerhan->get_x_y().second;
+    float player_x = playerhan->get_center().x;
+    float player_y = playerhan->get_center().y;
 
     glColor3f(1.0f, 1.0f, 1.0f);
 
