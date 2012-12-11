@@ -166,6 +166,83 @@ class ObjectDrawer{
     }
     glEnd();
   }
+
+  void draw_box(vector<Point3D> &corners, float bottom, float top){
+    Point3D normal;
+
+    glBegin(GL_QUADS);
+    //Bottom
+    glColor3f(1.0f, 0.0f, 0.0f);
+    normal = get_normal(Point3D(corners[3].x, corners[3].y, bottom),
+			Point3D(corners[2].x, corners[2].y, bottom),
+			Point3D(corners[1].x, corners[1].y, bottom));
+    glNormal3f(normal.x, normal.y, normal.z);
+    //    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(corners[3].x, corners[3].y, bottom);        //top left
+    //    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(corners[2].x, corners[2].y, bottom);  //bottom left
+    //    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(corners[1].x, corners[1].y, bottom);//bottom right
+    //    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(corners[0].x, corners[0].y, bottom);      //top right
+
+    //Top
+    glColor3f(0.0f, 1.0f, 0.0f);
+    normal = get_normal(Point3D(corners[0].x, corners[0].y, top),
+			Point3D(corners[1].x, corners[1].y, top),
+			Point3D(corners[2].x, corners[2].y, top));
+    glNormal3f(normal.x, normal.y, normal.z);
+    glVertex3f(corners[0].x, corners[0].y, top);        //top left
+    
+    glVertex3f(corners[1].x, corners[1].y, top);  //bottom left
+    glVertex3f(corners[2].x, corners[2].y, top);//bottom right
+    glVertex3f(corners[3].x, corners[3].y, top);      //top right
+
+    //Back
+    glColor3f(0.0f, 0.0f, 1.0f);
+    normal = get_normal(Point3D(corners[1].x, corners[1].y, top),
+			Point3D(corners[1].x, corners[1].y, bottom),
+			Point3D(corners[2].x, corners[2].y, bottom));
+    glNormal3f(normal.x, normal.y, normal.z);
+    glVertex3f(corners[1].x, corners[1].y, top);        //top left
+    glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
+    glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
+    glVertex3f(corners[2].x, corners[2].y, top);      //top right
+
+    //Front
+    glColor3f(0.0f, 0.0f, 1.0f);
+    normal = get_normal(Point3D(corners[3].x, corners[3].y, top),
+			Point3D(corners[3].x, corners[3].y, bottom),
+			Point3D(corners[0].x, corners[0].y, bottom));
+    glNormal3f(normal.x, normal.y, normal.z);
+    glVertex3f(corners[3].x, corners[3].y, top);        //top left
+    glVertex3f(corners[3].x, corners[3].y, bottom);  //bottom left
+    glVertex3f(corners[0].x, corners[0].y, bottom);//bottom right
+    glVertex3f(corners[0].x, corners[0].y, top);      //top right
+
+    //Left
+    glColor3f(0.0f, 0.0f, 1.0f);
+    normal = get_normal(Point3D(corners[0].x, corners[0].y, top),
+			Point3D(corners[0].x, corners[0].y, bottom),
+			Point3D(corners[1].x, corners[1].y, bottom));
+    glNormal3f(normal.x, normal.y, normal.z);
+    glVertex3f(corners[0].x, corners[0].y, top);        //top left
+    glVertex3f(corners[0].x, corners[0].y, bottom);  //bottom left
+    glVertex3f(corners[1].x, corners[1].y, bottom);//bottom right
+    glVertex3f(corners[1].x, corners[1].y, top);      //top right
+
+    //Right
+    glColor3f(0.0f, 0.0f, 1.0f);
+    normal = get_normal(Point3D(corners[2].x, corners[2].y, top),
+			Point3D(corners[2].x, corners[2].y, bottom),
+			Point3D(corners[3].x, corners[3].y, bottom));
+    glNormal3f(normal.x, normal.y, normal.z);
+    glVertex3f(corners[2].x, corners[2].y, top);        //top left
+    glVertex3f(corners[2].x, corners[2].y, bottom);  //bottom left
+    glVertex3f(corners[3].x, corners[3].y, bottom);//bottom right
+    glVertex3f(corners[3].x, corners[3].y, top);      //top right
+    glEnd();
+  }
   
   void draw_player(){
     //    glEnable(GL_TEXTURE_2D);
@@ -173,7 +250,8 @@ class ObjectDrawer{
     vector<Point3D> corners = playerhan->get_corners();
     float bottom = playerhan->get_center().z - playerhan->get_height()/2.0f;
     float top = playerhan->get_center().z + playerhan->get_height()/2.0f;
-
+    
+    draw_box(corners, bottom, top);
     //    glEnable(GL_BLEND);
   
     //draw mask for alpha blending
@@ -188,53 +266,6 @@ class ObjectDrawer{
     else
     glBindTexture(GL_TEXTURE_2D, textures[PLAYER_NORMAL]);*/
 
-    glBegin(GL_QUADS);
-    //Bottom
-    glColor3f(1.0f, 0.0f, 0.0f);
-    //    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(corners[0].x, corners[0].y, bottom);        //top left
-    //    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
-    //    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
-    //    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(corners[3].x, corners[3].y, bottom);      //top right
-
-    //Top
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(corners[3].x, corners[3].y, top);        //top left
-    glVertex3f(corners[2].x, corners[2].y, top);  //bottom left
-    glVertex3f(corners[1].x, corners[1].y, top);//bottom right
-    glVertex3f(corners[0].x, corners[0].y, top);      //top right
-
-    //Back
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(corners[1].x, corners[1].y, top);        //top left
-    glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
-    glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
-    glVertex3f(corners[2].x, corners[2].y, top);      //top right
-
-    //Front
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(corners[3].x, corners[3].y, top);        //top left
-    glVertex3f(corners[3].x, corners[3].y, bottom);  //bottom left
-    glVertex3f(corners[0].x, corners[0].y, bottom);//bottom right
-    glVertex3f(corners[0].x, corners[0].y, top);      //top right
-
-    //Left
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(corners[0].x, corners[0].y, top);        //top left
-    glVertex3f(corners[0].x, corners[0].y, bottom);  //bottom left
-    glVertex3f(corners[1].x, corners[1].y, bottom);//bottom right
-    glVertex3f(corners[1].x, corners[1].y, top);      //top right
-
-    //Right
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(corners[2].x, corners[2].y, top);        //top left
-    glVertex3f(corners[2].x, corners[2].y, bottom);  //bottom left
-    glVertex3f(corners[3].x, corners[3].y, bottom);//bottom right
-    glVertex3f(corners[3].x, corners[3].y, top);      //top right
-    glEnd();
     //    glDisable(GL_TEXTURE_2D);
     //    glDisable(GL_BLEND);
   }
@@ -271,50 +302,8 @@ class ObjectDrawer{
 
       vector<Point3D> corners = curr->get_corners();
       glColor3f(0.7f, 0.7f, 0.7f);
-
-      glBegin(GL_QUADS);
-      //Bottom
-      glColor3f(1.0f, 0.0f, 0.0f);
-      glVertex3f(corners[0].x, corners[0].y, bottom);        //top left
-      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
-      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
-      glVertex3f(corners[3].x, corners[3].y, bottom);      //top right
-
-      //Top
-      glColor3f(0.0f, 1.0f, 0.0f);
-      glVertex3f(corners[3].x, corners[3].y, top);        //top left
-      glVertex3f(corners[2].x, corners[2].y, top);  //bottom left
-      glVertex3f(corners[1].x, corners[1].y, top);//bottom right
-      glVertex3f(corners[0].x, corners[0].y, top);      //top right
-
-      //Back
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[1].x, corners[1].y, top);        //top left
-      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
-      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
-      glVertex3f(corners[2].x, corners[2].y, top);      //top right
-
-      //Front
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[3].x, corners[3].y, top);        //top left
-      glVertex3f(corners[3].x, corners[3].y, bottom);  //bottom left
-      glVertex3f(corners[0].x, corners[0].y, bottom);//bottom right
-      glVertex3f(corners[0].x, corners[0].y, top);      //top right
-
-      //Left
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[0].x, corners[0].y, top);        //top left
-      glVertex3f(corners[0].x, corners[0].y, bottom);  //bottom left
-      glVertex3f(corners[1].x, corners[1].y, bottom);//bottom right
-      glVertex3f(corners[1].x, corners[1].y, top);      //top right
-
-      //Right
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[2].x, corners[2].y, top);        //top left
-      glVertex3f(corners[2].x, corners[2].y, bottom);  //bottom left
-      glVertex3f(corners[3].x, corners[3].y, bottom);//bottom right
-      glVertex3f(corners[3].x, corners[3].y, top);      //top right
-      glEnd();
+      
+      draw_box(corners, bottom, top);
     }
   }
 
@@ -330,49 +319,8 @@ class ObjectDrawer{
       float top = curr->get_center().z + curr->get_height()/2.0f;
 
       vector<Point3D> corners = curr->get_corners();
-      glBegin(GL_QUADS);
-      //Bottom
-      glColor3f(1.0f, 0.0f, 0.0f);
-      glVertex3f(corners[0].x, corners[0].y, bottom);        //top left
-      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
-      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
-      glVertex3f(corners[3].x, corners[3].y, bottom);      //top right
 
-      //Top
-      glColor3f(0.0f, 1.0f, 0.0f);
-      glVertex3f(corners[3].x, corners[3].y, top);        //top left
-      glVertex3f(corners[2].x, corners[2].y, top);  //bottom left
-      glVertex3f(corners[1].x, corners[1].y, top);//bottom right
-      glVertex3f(corners[0].x, corners[0].y, top);      //top right
-
-      //Back
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[1].x, corners[1].y, top);        //top left
-      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
-      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
-      glVertex3f(corners[2].x, corners[2].y, top);      //top right
-
-      //Front
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[3].x, corners[3].y, top);        //top left
-      glVertex3f(corners[3].x, corners[3].y, bottom);  //bottom left
-      glVertex3f(corners[0].x, corners[0].y, bottom);//bottom right
-      glVertex3f(corners[0].x, corners[0].y, top);      //top right
-
-      //Left
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[0].x, corners[0].y, top);        //top left
-      glVertex3f(corners[0].x, corners[0].y, bottom);  //bottom left
-      glVertex3f(corners[1].x, corners[1].y, bottom);//bottom right
-      glVertex3f(corners[1].x, corners[1].y, top);      //top right
-
-      //Right
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[2].x, corners[2].y, top);        //top left
-      glVertex3f(corners[2].x, corners[2].y, bottom);  //bottom left
-      glVertex3f(corners[3].x, corners[3].y, bottom);//bottom right
-      glVertex3f(corners[3].x, corners[3].y, top);      //top right
-      glEnd();
+      draw_box(corners, bottom, top);
 
       /*      for(int j = 0; j < corners.size(); ++j){
 	glEnable(GL_TEXTURE_2D);
@@ -414,49 +362,7 @@ class ObjectDrawer{
 
       vector<Point3D> corners = curr->get_corners();
 
-      glBegin(GL_QUADS);
-      //Bottom
-      glColor3f(1.0f, 0.0f, 0.0f);
-      glVertex3f(corners[0].x, corners[0].y, bottom);        //top left
-      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
-      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
-      glVertex3f(corners[3].x, corners[3].y, bottom);      //top right
-
-      //Top
-      glColor3f(0.0f, 1.0f, 0.0f);
-      glVertex3f(corners[3].x, corners[3].y, top);        //top left
-      glVertex3f(corners[2].x, corners[2].y, top);  //bottom left
-      glVertex3f(corners[1].x, corners[1].y, top);//bottom right
-      glVertex3f(corners[0].x, corners[0].y, top);      //top right
-
-      //Back
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[1].x, corners[1].y, top);        //top left
-      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
-      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
-      glVertex3f(corners[2].x, corners[2].y, top);      //top right
-
-      //Front
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[3].x, corners[3].y, top);        //top left
-      glVertex3f(corners[3].x, corners[3].y, bottom);  //bottom left
-      glVertex3f(corners[0].x, corners[0].y, bottom);//bottom right
-      glVertex3f(corners[0].x, corners[0].y, top);      //top right
-
-      //Left
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[0].x, corners[0].y, top);        //top left
-      glVertex3f(corners[0].x, corners[0].y, bottom);  //bottom left
-      glVertex3f(corners[1].x, corners[1].y, bottom);//bottom right
-      glVertex3f(corners[1].x, corners[1].y, top);      //top right
-
-      //Right
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[2].x, corners[2].y, top);        //top left
-      glVertex3f(corners[2].x, corners[2].y, bottom);  //bottom left
-      glVertex3f(corners[3].x, corners[3].y, bottom);//bottom right
-      glVertex3f(corners[3].x, corners[3].y, top);      //top right
-      glEnd();
+      draw_box(corners, bottom, top);
 
  /*      // draw mask for alpha blending
       if(curr->get_flare_shown() > 0)
@@ -519,50 +425,7 @@ class ObjectDrawer{
 
       vector<Point3D> corners = curr->get_corners();
 
-      glBegin(GL_QUADS);
-      //Bottom
-      glColor3f(1.0f, 0.0f, 0.0f);
-      glVertex3f(corners[0].x, corners[0].y, bottom);        //top left
-      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
-      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
-      glVertex3f(corners[3].x, corners[3].y, bottom);      //top right
-
-      //Top
-      glColor3f(0.0f, 1.0f, 0.0f);
-      glVertex3f(corners[3].x, corners[3].y, top);        //top left
-      glVertex3f(corners[2].x, corners[2].y, top);  //bottom left
-      glVertex3f(corners[1].x, corners[1].y, top);//bottom right
-      glVertex3f(corners[0].x, corners[0].y, top);      //top right
-
-      //Back
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[1].x, corners[1].y, top);        //top left
-      glVertex3f(corners[1].x, corners[1].y, bottom);  //bottom left
-      glVertex3f(corners[2].x, corners[2].y, bottom);//bottom right
-      glVertex3f(corners[2].x, corners[2].y, top);      //top right
-
-      //Front
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[3].x, corners[3].y, top);        //top left
-      glVertex3f(corners[3].x, corners[3].y, bottom);  //bottom left
-      glVertex3f(corners[0].x, corners[0].y, bottom);//bottom right
-      glVertex3f(corners[0].x, corners[0].y, top);      //top right
-
-      //Left
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[0].x, corners[0].y, top);        //top left
-      glVertex3f(corners[0].x, corners[0].y, bottom);  //bottom left
-      glVertex3f(corners[1].x, corners[1].y, bottom);//bottom right
-      glVertex3f(corners[1].x, corners[1].y, top);      //top right
-
-      //Right
-      glColor3f(0.0f, 0.0f, 1.0f);
-      glVertex3f(corners[2].x, corners[2].y, top);        //top left
-      glVertex3f(corners[2].x, corners[2].y, bottom);  //bottom left
-      glVertex3f(corners[3].x, corners[3].y, bottom);//bottom right
-      glVertex3f(corners[3].x, corners[3].y, top);      //top right
-      glEnd();
-
+      draw_box(corners, bottom, top);
       /*    glBegin(GL_QUADS);
       glTexCoord2f(1.0f, 0.0f);
       glVertex3f(corners[0].first, corners[0].second, 0.0f);
@@ -725,6 +588,47 @@ class ObjectDrawer{
     glDisable(GL_TEXTURE_2D);
 
     glPopMatrix();
+  }
+
+  void normalize(Point3D * vector)
+  {
+    // calculate the length of the vector
+    float length = (float)(sqrt((vector->x * vector->x) +
+				(vector->y * vector->y) +
+				(vector->z * vector->z)));
+
+    // avoid division by 0
+    if (length == 0.0f)
+      length = 1.0f;
+
+    // reduce to unit size
+    vector->x /= length;
+    vector->y /= length;
+    vector->z /= length;
+  }
+  
+  Point3D get_normal(Point3D v1, Point3D v2, Point3D v3){
+    Point3D a, b, normal;
+
+    // calculate the vectors A and B
+    // note that v[3] is defined with counterclockwise winding in mind
+    // a
+    a.x = v1.x - v2.x;
+    a.y = v1.y - v2.y;
+    a.z = v1.z - v2.z;
+    // b
+    b.x = v2.x - v3.x;
+    b.y = v2.y - v3.y;
+    b.z = v2.z - v3.z;
+
+    // calculate the cross product and place the resulting vector
+    // into the address specified by vector_t *normal
+    normal.x = (a.y * b.z) - (a.z * b.y);
+    normal.y = (a.z * b.x) - (a.x * b.z);
+    normal.z = (a.x * b.y) - (a.y * b.x);
+
+    normalize(&normal);
+    return normal;
   }
 };
 

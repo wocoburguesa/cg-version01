@@ -43,6 +43,28 @@ void changeSize(int w, int h) {
   glMatrixMode(GL_MODELVIEW);
 }
 
+void init(){
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+
+  // Create light components
+  GLfloat ambientLight[] = { 0.5f, 0.5f, 0.5f, 0.0f };
+  GLfloat diffuseLight[] = { 0.5f, 0.5f, 0.5f, 0.0f };
+  GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 0.0f };
+  GLfloat position[] = { -1.5f, 1.0f, -4.0f, 1.0f };
+
+  // Assign created components to GL_LIGHT0
+  glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+  glLightfv(GL_LIGHT0, GL_POSITION, position);
+
+  // enable color tracking
+  glEnable(GL_COLOR_MATERIAL);
+  // set material properties which will be assigned by glColor
+  glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+}
+
 void renderScene(void){
   // Clear Color and Depth Buffers
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -52,13 +74,6 @@ void renderScene(void){
   // Reset transformations
   glLoadIdentity();
  
-  float player_x = playerhan->get_center().x;
-  float player_y = playerhan->get_center().y;
-  // Set the camera
-  /*  gluLookAt(player_x, player_y, camera_distance,
-	    player_x, player_y,  0.0f,
-	    0.0f, 1.0f,  0.0f);*/
-
   gluLookAt(camera->get_center().x,
 	    camera->get_center().y,
 	    camera->get_center().z,
@@ -185,6 +200,8 @@ int main(int argc, char **argv) {
   glutCreateWindow("Carritos en acidos");
 
   drawer->load_textures();
+
+  init();
 
   // register callbacks
   glutDisplayFunc(renderScene);

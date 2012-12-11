@@ -49,10 +49,10 @@ class GameHandler{
     building.push_back(Point3D(-(MAP_WIDTH+1.0f),
 			       -(MAP_WIDTH+1.0f),
 			       GROUND_LEVEL));
-    building.push_back(Point3D(-MAP_WIDTH,
+    building.push_back(Point3D(-(MAP_WIDTH+1.0f),
 			       -(MAP_WIDTH+1.0f),
 			       GROUND_LEVEL));
-    building.push_back(Point3D(-MAP_WIDTH,
+    building.push_back(Point3D(-(MAP_WIDTH+1.0f),
 			       (MAP_WIDTH+1.0f),
 			       GROUND_LEVEL));
     spawn_building(building);
@@ -64,10 +64,10 @@ class GameHandler{
     building.push_back(Point3D(-MAP_WIDTH,
 			       -(MAP_WIDTH+1.0f),
 			       GROUND_LEVEL));
-    building.push_back(Point3D((MAP_WIDTH+1.0f),
+    building.push_back(Point3D(-MAP_WIDTH,
 			       -(MAP_WIDTH+1.0f),
 			       GROUND_LEVEL));
-    building.push_back(Point3D((MAP_WIDTH+1.0f),
+    building.push_back(Point3D(-MAP_WIDTH,
 			       -MAP_WIDTH,
 			       GROUND_LEVEL));
     spawn_building(building);
@@ -79,10 +79,10 @@ class GameHandler{
     building.push_back(Point3D(MAP_WIDTH,
 			       -MAP_WIDTH,
 			       GROUND_LEVEL));
-    building.push_back(Point3D((MAP_WIDTH+1.0f),
+    building.push_back(Point3D(MAP_WIDTH,
 			       -MAP_WIDTH,
 			       GROUND_LEVEL));
-    building.push_back(Point3D((MAP_WIDTH+1.0f),
+    building.push_back(Point3D(MAP_WIDTH,
 			       (MAP_WIDTH+1.0f),
 			       GROUND_LEVEL));
     spawn_building(building);
@@ -94,10 +94,10 @@ class GameHandler{
     building.push_back(Point3D(-MAP_WIDTH,
 			       MAP_WIDTH,
 			       GROUND_LEVEL));
-    building.push_back(Point3D(MAP_WIDTH,
+    building.push_back(Point3D(-MAP_WIDTH,
 			       MAP_WIDTH,
 			       GROUND_LEVEL));
-    building.push_back(Point3D(MAP_WIDTH,
+    building.push_back(Point3D(-MAP_WIDTH,
 			       (MAP_WIDTH+1.0f),
 			       GROUND_LEVEL));
     spawn_building(building);
