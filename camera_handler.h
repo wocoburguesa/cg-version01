@@ -88,23 +88,15 @@ class CameraHandler{
   void update(){
     process_friction();
     update_position();
-    if(angle >= 360.0f)
-      angle -= 360.0f;
-    else if(angle < 0.0f)
-      angle += 360.0f;
-    else;
 
     if(reset_time > 0){
       reset_time--;
     }
     else{
-      float focus_angle = focus_object->get_angle();
-      cout << "angle vs focus_angle: " << angle << " " << focus_angle << endl;
-      if(abs(angle - focus_angle) > 0.6f)
-	if(abs(angle - CAMERA_TURNING_SPEED - focus_angle) >
-	   abs(angle + CAMERA_TURNING_SPEED - focus_angle))
+      if(abs(angle - focus_object->get_angle()) > 0.6f)
+	if(angle > focus_object->get_angle())
 	  move_right();
-	else
+	else if(angle < focus_object->get_angle())
 	  move_left();
     }
 
@@ -181,10 +173,14 @@ class CameraHandler{
 
   void move_left(){
     angle += CAMERA_TURNING_SPEED;
-  }
+    if(angle >= 360.0f)
+      angle -= 360.0f;
+ }
 
   void move_right(){
     angle -= CAMERA_TURNING_SPEED;
+    if(angle < 0.0f)
+      angle += 360.0f;
   }
   /********** MOVEMENT HANDLERS **********/
 
