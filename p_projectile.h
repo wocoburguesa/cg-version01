@@ -9,6 +9,8 @@
 using namespace std;
 
 class Projectile : public MovingObject{
+ protected:
+  int color_diff;
  public:
   Projectile(float x_init,
 	     float y_init,
@@ -18,6 +20,8 @@ class Projectile : public MovingObject{
 	     float friction,
 	     float size,
 	     float ang=90.0f){
+    color_diff = 0;
+    
     // setting initial position
     center = Point3D(x_init, y_init, hght/2.0f);
 
@@ -76,6 +80,9 @@ class Projectile : public MovingObject{
   }
   
   void update(){
+    color_diff++;
+    color_diff = color_diff % 200;
+    set_color(Point3D(1.0f, color_diff/255.0f, 0.0f));
     process_friction();
     update_position();
     move_forward();

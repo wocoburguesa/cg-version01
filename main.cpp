@@ -51,7 +51,7 @@ void init(){
   GLfloat ambientLight[] = { 0.5f, 0.5f, 0.5f, 0.0f };
   GLfloat diffuseLight[] = { 0.5f, 0.5f, 0.5f, 0.0f };
   GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 0.0f };
-  GLfloat position[] = { -1.5f, 1.0f, -4.0f, 1.0f };
+  GLfloat position[] = { 20.0f, 20.0f, 2.0f, 1.0f };
 
   // Assign created components to GL_LIGHT0
   glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
@@ -62,7 +62,7 @@ void init(){
   // enable color tracking
   glEnable(GL_COLOR_MATERIAL);
   // set material properties which will be assigned by glColor
-  glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 }
 
 void renderScene(void){
@@ -90,16 +90,14 @@ void renderScene(void){
   drawer->draw_floor();
   drawer->draw_player();
   drawer->draw_buildings();
+  drawer->draw_bounds();
   drawer->draw_enemies();
   drawer->draw_projectiles();
   drawer->draw_pickups();
 
-  drawer->draw_item_counter(gamehan->get_items_collected());
-  drawer->draw_item_counter_icon();
-  drawer->draw_lifebar();
-
   if(gamehan->check_game_condition() != 0)
-    drawer->draw_endgame_billboard();
+    //    drawer->draw_endgame_billboard();
+    cout << "game over" << endl;
 
   glutSwapBuffers();
 }
@@ -109,7 +107,7 @@ void normal_key_handler(unsigned char key, int x, int y) {
     exit(0);
   if(gamehan->check_game_condition() != 0)
     if(key == 13){
-      gamehan->set_game();
+      gamehan->set_game("octagon.lvl");
       game_over_billboard_distance = 0.0f;      
     }
     else
@@ -176,21 +174,13 @@ int main(int argc, char **argv) {
   game_over_billboard_distance = 0.0f;
   camera_distance = 10.f;
 
-  playerhan = new PlayerHandler(PLAYER_STARTING_X,
-				PLAYER_STARTING_Y,
-				PLAYER_HEIGHT,
-				PLAYER_MAX_SPEED,
-				PLAYER_ACCELERATION,
-				PLAYER_FRICTION,
-				PLAYER_SIZE,
-				PLAYER_STARTING_ANGLE,
-				PLAYER_STARTING_HEALTH);
-  gamehan = new GameHandler(playerhan);
-  drawer = new ObjectDrawer(gamehan, playerhan);
+  gamehan = new GameHandler();
+  drawer = new ObjectDrawer(gamehan, gamehan->get_player());
 
-  camera = new CameraHandler(playerhan);
+  camera = new CameraHandler(gamehan->get_player());
 
-  gamehan->set_game();
+  gamehan->set_game("octagon.lvl");
+  playerhan = gamehan->get_player();
 
   // init GLUT and create window
   glutInit(&argc, argv);
@@ -198,8 +188,6 @@ int main(int argc, char **argv) {
   glutInitWindowPosition(-1, -1);
   glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
   glutCreateWindow("Carritos en acidos");
-
-  drawer->load_textures();
 
   init();
 

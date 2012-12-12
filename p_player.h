@@ -15,6 +15,7 @@ class PlayerHandler : public MovingObject{
   bool shot_fired;
   int flare_shown;
   int shot_cooldown;
+  int color_diff;
 
   int uber_hit_count;
   int uber_reset;
@@ -138,6 +139,9 @@ class PlayerHandler : public MovingObject{
   /********** BUTTON PRESS CONTROLLERS **********/
 
   void update(){
+    float life_left = get_remaining_life_pct();
+    set_color(Point3D((1-life_left)*1.0f, life_left*1.0f, 0.0f));
+
     if(flare_shown > 0)
       flare_shown--;
     else;

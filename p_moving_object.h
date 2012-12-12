@@ -107,44 +107,32 @@ class MovingObject : public Object{
     float ang = (angle + TH);
     Point2D direction(cos(ang*PI/180.0f), sin(ang*PI/180.0f));
     
-    float denom = sqrt(direction.x*direction.x +
-		       direction.y*direction.y);
-    float factor = radius / denom;
-    corners[0].x = center.x + (direction.x * factor);
-    corners[0].y = center.y + (direction.y * factor);
+    corners[0].x = center.x + (direction.x * radius);
+    corners[0].y = center.y + (direction.y * radius);
   }
 
   void set_top_right(){
     float ang = (angle + TH + 300);
     Point2D direction(cos(ang*PI/180), sin(ang*PI/180));
     
-    float denom = sqrt(direction.x*direction.x +
-		       direction.y*direction.y);
-    float factor = radius / denom;
-    corners[3].x = center.x + (direction.x * factor);
-    corners[3].y = center.y + (direction.y * factor);
+    corners[3].x = center.x + (direction.x * radius);
+    corners[3].y = center.y + (direction.y * radius);
   }
 
   void set_bottom_left(){
     float ang = (angle + 120 + TH);
     Point2D direction(cos(ang*PI/180), sin(ang*PI/180));
     
-    float denom = sqrt(direction.x*direction.x +
-		       direction.y*direction.y);
-    float factor = radius / denom;
-    corners[1].x = center.x + (direction.x * factor);
-    corners[1].y = center.y + (direction.y * factor);
+    corners[1].x = center.x + (direction.x * radius);
+    corners[1].y = center.y + (direction.y * radius);
   }
 
   void set_bottom_right(){
     float ang = (angle + TH + 180);
     Point2D direction(cos(ang*PI/180), sin(ang*PI/180));
     
-    float denom = sqrt(direction.x*direction.x +
-		       direction.y*direction.y);
-    float factor = radius / denom;
-    corners[2].x = center.x + (direction.x * factor);
-    corners[2].y = center.y + (direction.y * factor);
+    corners[2].x = center.x + (direction.x * radius);
+    corners[2].y = center.y + (direction.y * radius);
   }
 
   void process_friction(){
@@ -155,11 +143,8 @@ class MovingObject : public Object{
   }
 
   void update_position(){
-    float denom = sqrt(mov_vector.x*mov_vector.x +
-		       mov_vector.y*mov_vector.y);
-    float factor = speed / denom;
-    center.x += mov_vector.x * factor;
-    center.y += mov_vector.y * factor;
+    center.x += mov_vector.x * speed;
+    center.y += mov_vector.y * speed;
     
     // update corners
     set_top_left();
@@ -205,11 +190,6 @@ class MovingObject : public Object{
 
   void turn_left(){
     angle = (angle + PLAYER_TURNING_SPEED);
-    if(angle >= 360.0f)
-      angle -= 360.0f;
-    else if(angle < 0.0f)
-      angle += 360.0f;
-    else;
 
     mov_vector.x = cos(angle*PI/180);
     mov_vector.y = sin(angle*PI/180);
@@ -217,11 +197,6 @@ class MovingObject : public Object{
 
   void turn_right(){
     angle = (angle - PLAYER_TURNING_SPEED);
-    if(angle >= 360.0f)
-      angle -= 360.0f;
-    else if(angle < 0.0f)
-      angle += 360.0f;
-    else;
 
     mov_vector.x = cos(angle*PI/180);
     mov_vector.y = sin(angle*PI/180);

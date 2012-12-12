@@ -17,6 +17,7 @@ using namespace std;
 class MapHandler{
  private:
   vector<StaticObject*> buildings;
+  vector<StaticObject*> bounds;
   vector<StaticObject*> pickups;
   vector<Enemy*> enemies;
   vector<Projectile*> projectiles;
@@ -31,6 +32,7 @@ class MapHandler{
 
   /********** GETTERS **********/
   int get_buildings_count(){ return buildings.size(); }
+  int get_bounds_count(){ return bounds.size(); }
   int get_pickups_count(){ return pickups.size(); }
   int get_enemies_count(){ return enemies.size(); }
   int get_projectiles_count(){ return projectiles.size(); }
@@ -38,6 +40,7 @@ class MapHandler{
   bool check_for_pickup(){ return register_pickup; }
 
   StaticObject* get_building_by_idx(int idx){ return buildings[idx]; }
+  StaticObject* get_bound_by_idx(int idx){ return bounds[idx]; }
   StaticObject* get_pickup_by_idx(int idx){ return pickups[idx]; }
   Enemy* get_enemy_by_idx(int idx){ return enemies[idx]; }
   Projectile* get_projectile_by_idx(int idx){ return projectiles[idx]; }
@@ -50,16 +53,27 @@ class MapHandler{
   /********** SETTERS **********/
   void reset_pickup_status(){ register_pickup = 0; }
   void reset_buildings(){ buildings.clear(); }
+  void reset_bounds(){ bounds.clear(); }
   void reset_enemies(){ enemies.clear(); }
   void reset_pickups(){ pickups.clear(); }
   void reset_projectiles(){ projectiles.clear(); }
   /********** SETTERS **********/
 
   /********** OBJECT CREATORS **********/
+  void add_bound(vector<Point3D> &c,
+		 float height,
+		 Point3D color){
+    StaticObject * new_object = new StaticObject(c, height, 0);
+    new_object->set_color(color);
+    bounds.push_back(new_object);
+  }
+
   void add_static_object(vector<Point3D> &c,
 			 float height,
-			 bool is_pickup){
+			 bool is_pickup,
+			 Point3D color){
     StaticObject * new_object = new StaticObject(c, height, is_pickup);
+    new_object->set_color(color);
     if(is_pickup)
       pickups.push_back(new_object);
     else
@@ -82,16 +96,18 @@ class MapHandler{
 			      center.y+PICKUP_SIZE,
 			      GROUND_LEVEL));
 
-    add_static_object(corners, PICKUP_HEIGHT, 1);
+    add_static_object(corners, PICKUP_HEIGHT, 1, dropper->get_color());
   }
 
 
   void add_enemy_object(float x, float y, float height, float max_speed,
 			float acceleration, float friction,
-			float size, float angle, float health){
+			float size, float angle, float health,
+			Point3D color){
     Enemy * new_enemy = new Enemy(x, y, height,
 				  max_speed, acceleration, friction,
 				  size, angle, health);
+    new_enemy->set_color(color);
     enemies.push_back(new_enemy);
   }
 
@@ -239,6 +255,18 @@ class MapHandler{
 	if(check_for_collision(player->get_corners(),
 			       buildings[i]->get_corners(),
 			       buildings[i]->get_equations())){
+	  player->bump();
+	  player->register_crash();
+	}
+      }
+    }
+
+    for(int i = 0; i < bounds.size(); ++i){
+      if(two_d_distance(player->get_center(), bounds[i]->get_center()) <=
+	 (player->get_radius() + bounds[i]->get_radius())){
+	if(check_for_collision(player->get_corners(),
+			       bounds[i]->get_corners(),
+			       bounds[i]->get_equations())){
 	  player->bump();
 	  player->register_crash();
 	}

@@ -1,6 +1,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <iostream>
+#include <fstream>
 #include "map_handler.h"
 
 #ifndef GAME_HANDLER_H
@@ -19,15 +20,25 @@ class GameHandler{
   int game_condition;
 
  public:
-  GameHandler(PlayerHandler * p){
+  GameHandler(){
     items_collected = 0;
     game_condition = 0;
     maphan = new MapHandler();
-    player = p;
-    maphan->add_player(p);
+    player = new PlayerHandler(PLAYER_STARTING_X,
+			       PLAYER_STARTING_Y,
+			       PLAYER_HEIGHT,
+			       PLAYER_MAX_SPEED,
+			       PLAYER_ACCELERATION,
+			       PLAYER_FRICTION,
+			       PLAYER_SIZE,
+			       PLAYER_STARTING_ANGLE,
+			       PLAYER_STARTING_HEALTH);
+    maphan->add_player(player);
   }
 
-  void set_game(){
+  PlayerHandler * get_player(){ return player; };
+
+  void set_game(char * level){
     maphan->reset_pickup_status();
     maphan->reset_buildings();
     maphan->reset_enemies();
@@ -41,103 +52,56 @@ class GameHandler{
 			       GROUND_LEVEL));
     player->set_angle(PLAYER_STARTING_ANGLE);
 
-    vector<Point3D> building;
-    /********** MAP BOUNDS **********/
-    building.push_back(Point3D(-(MAP_WIDTH+1.0f),
-			       (MAP_WIDTH+1.0f),
-			       GROUND_LEVEL));
-    building.push_back(Point3D(-(MAP_WIDTH-10.0f),
-			       -(MAP_WIDTH+1.0f),
-			       GROUND_LEVEL));
-    building.push_back(Point3D(-(MAP_WIDTH-20.0f),
-			       -(MAP_WIDTH+1.0f),
-			       GROUND_LEVEL));
-    building.push_back(Point3D(-(MAP_WIDTH+1.0f),
-			       (MAP_WIDTH+1.0f),
-			       GROUND_LEVEL));
-    spawn_building(building);
-    building.clear();
+    srand(time(0));
 
-    building.push_back(Point3D(-MAP_WIDTH,
-			       -MAP_WIDTH,
-			       GROUND_LEVEL));
-    building.push_back(Point3D(-MAP_WIDTH,
-			       -(MAP_WIDTH+1.0f),
-			       GROUND_LEVEL));
-    building.push_back(Point3D(-MAP_WIDTH,
-			       -(MAP_WIDTH+1.0f),
-			       GROUND_LEVEL));
-    building.push_back(Point3D(-MAP_WIDTH,
-			       -MAP_WIDTH,
-			       GROUND_LEVEL));
-    spawn_building(building);
-    building.clear();
-
-    building.push_back(Point3D(MAP_WIDTH,
-			       (MAP_WIDTH+1.0f),
-			       GROUND_LEVEL));
-    building.push_back(Point3D(MAP_WIDTH,
-			       -MAP_WIDTH,
-			       GROUND_LEVEL));
-    building.push_back(Point3D(MAP_WIDTH,
-			       -MAP_WIDTH,
-			       GROUND_LEVEL));
-    building.push_back(Point3D(MAP_WIDTH,
-			       (MAP_WIDTH+1.0f),
-			       GROUND_LEVEL));
-    spawn_building(building);
-    building.clear();
-
-    building.push_back(Point3D(-MAP_WIDTH,
-			       (MAP_WIDTH+1.0f),
-			       GROUND_LEVEL));
-    building.push_back(Point3D(-MAP_WIDTH,
-			       MAP_WIDTH,
-			       GROUND_LEVEL));
-    building.push_back(Point3D(-MAP_WIDTH,
-			       MAP_WIDTH,
-			       GROUND_LEVEL));
-    building.push_back(Point3D(-MAP_WIDTH,
-			       (MAP_WIDTH+1.0f),
-			       GROUND_LEVEL));
-    spawn_building(building);
-    building.clear();
-    /********** MAP BOUNDS **********/
-
-    /********** BUILDINGS **********/
-    building.push_back(Point3D(-15.0f, -10.0f, GROUND_LEVEL));
-    building.push_back(Point3D(-15.0f, -16.0f, GROUND_LEVEL));
-    building.push_back(Point3D(-9.0f, -16.0f, GROUND_LEVEL));
-    building.push_back(Point3D(-9.0f, -10.0f, GROUND_LEVEL));
-    spawn_building(building);
-    building.clear();
-
-    building.push_back(Point3D(-27.0f, 16.0f, GROUND_LEVEL));
-    building.push_back(Point3D(-27.0f, 10.0f, GROUND_LEVEL));
-    building.push_back(Point3D(-21.0f, 10.0f, GROUND_LEVEL));
-    building.push_back(Point3D(-21.0f, 16.0f, GROUND_LEVEL));
-    spawn_building(building);
-    building.clear();
-
-    building.push_back(Point3D(16.0f, 5.0f, GROUND_LEVEL));
-    building.push_back(Point3D(16.0f, -2.0f, GROUND_LEVEL));
-    building.push_back(Point3D(23.0f, -2.0f, GROUND_LEVEL));
-    building.push_back(Point3D(23.0f, 5.0f, GROUND_LEVEL));
-    spawn_building(building);
-    building.clear();
-    /********** BUILDINGS **********/
-
-    /********** ENEMIES **********/
-    spawn_enemy(-21.0f, 18.0f);
-    spawn_enemy(-14.0f, 17.0f);
-    spawn_enemy(0.0f, 18.0f);
-    spawn_enemy(9.0f, 15.0f);
-    spawn_enemy(12.0f, 14.0f);
-    spawn_enemy(-19.0f, 1.0f);
-    spawn_enemy(-20.0f, -8.0f);
-    /*spawn_enemy(-21.0f, -11.0f);
-    spawn_enemy(-4.0f, -15.0f);
-    spawn_enemy(4.0f, -10.0f);*/
+    ifstream in(level);
+    string kind;
+    int quantity;
+    float x, y, z;
+    while(in >> kind){
+      if(kind == "BOUNDS"){
+	vector<Point3D> object;
+	float color_x = (rand()%100)/100.0f;
+	float color_y = (rand()%100)/100.0f;
+	float color_z = (rand()%100)/100.0f;
+	in >> quantity;
+	while(quantity--){
+	  for(int i = 0; i < 4; ++i){
+	    in >> x >> y >> z;
+	    object.push_back(Point3D(x*2.0f, y*2.0f, z*2.0f));
+	  }
+	  spawn_bound(object, Point3D(color_x, color_y, color_z));
+	  object.clear();
+	}
+      }
+      else if(kind == "BUILDINGS"){
+	vector<Point3D> object;
+	float color_x = (rand()%100)/100.0f;
+	float color_y = (rand()%100)/100.0f;
+	float color_z = (rand()%100)/100.0f;
+	in >> quantity;
+	while(quantity--){
+	  for(int i = 0; i < 4; ++i){
+	    in >> x >> y >> z;
+	    object.push_back(Point3D(x*2.0f, y*2.0f, z*2.0f));
+	  }
+	  spawn_building(object, Point3D(color_x, color_y, color_z));
+	  object.clear();
+	}
+      }
+      else if(kind == "ENEMIES"){
+	in >> quantity;
+	float color_x = (rand()%100)/100.0f;
+	float color_y = (rand()%100)/100.0f;
+	float color_z = (rand()%100)/100.0f;
+	while(quantity--){
+	  in >> x >> y >> z;
+	  cout << x << " " << y << " " << z << endl;
+	  spawn_enemy(x, y, z, Point3D(color_x, color_y, color_z));
+	}
+      }
+    }
+    in.close();
   }
 
   MapHandler* get_maphan(){ return maphan; };
@@ -158,22 +122,26 @@ class GameHandler{
     return a + diff;
   }
 
-  void spawn_building(vector<Point3D> &corners){
+  void spawn_building(vector<Point3D> &corners, Point3D color){
     float height = get_rand_in_range(MIN_BUILDING_HEIGHT,
 				     MAX_BUILDING_HEIGHT);
 
-    maphan->add_static_object(corners, height, 0);
+    maphan->add_static_object(corners, BOUND_HEIGHT, 0, color);
   }
 
-  void spawn_enemy(float x, float y){
+  void spawn_bound(vector<Point3D> &corners, Point3D color){
+    maphan->add_bound(corners, BOUND_HEIGHT, color);
+  }
+
+  void spawn_enemy(float x, float y, float angle, Point3D color){
     float size = get_rand_in_range(MIN_ENEMY_SIZE, MAX_ENEMY_SIZE);
     float max_speed = get_rand_in_range(MIN_ENEMY_SPEED, MAX_ENEMY_SPEED);
     float height = get_rand_in_range(MIN_ENEMY_HEIGHT, MAX_ENEMY_HEIGHT);
 
     maphan->add_enemy_object(x, y, height,
 			     max_speed, player->get_acceleration(),
-			     player->get_friction(), size, 180.0f,
-			     ENEMY_STARTING_HEALTH);
+			     player->get_friction(), size, angle,
+			     ENEMY_STARTING_HEALTH, color);
   }
 
   void spawn_projectile(MovingObject * shooter, float angle=-1.0f){

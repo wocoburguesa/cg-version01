@@ -173,14 +173,14 @@ class CameraHandler{
 
   void move_left(){
     angle += CAMERA_TURNING_SPEED;
-    if(angle >= 360.0f)
-      angle -= 360.0f;
+    /*    if(angle >= 360.0f)
+	  angle -= 360.0f;*/
  }
 
   void move_right(){
     angle -= CAMERA_TURNING_SPEED;
-    if(angle < 0.0f)
-      angle += 360.0f;
+    /*    if(angle < 0.0f)
+	  angle += 360.0f;*/
   }
   /********** MOVEMENT HANDLERS **********/
 

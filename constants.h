@@ -9,14 +9,14 @@ using namespace std;
 #define CONSTANTS_H
 
 /********** PLAYER CONSTANTS **********/
-const float PLAYER_STARTING_X = 0.0f;
-const float PLAYER_STARTING_Y = 0.0f;
-const float PLAYER_HEIGHT = 3.0f;
+const float PLAYER_STARTING_X = 21.213204f;
+const float PLAYER_STARTING_Y = 21.213204f;
+const float PLAYER_HEIGHT = 1.8f;
 const float PLAYER_MAX_SPEED = 0.01f;
 const float PLAYER_ACCELERATION = 0.00003f;
 const float PLAYER_FRICTION = 0.000005f;
 const float PLAYER_SIZE = 1.154700538f;
-const float PLAYER_STARTING_ANGLE = 90.0;
+const float PLAYER_STARTING_ANGLE = 45.0;
 const float PLAYER_STARTING_HEALTH = 1000.0f;
 const float PLAYER_TURNING_SPEED = 0.6f;
 const int PLAYER_UBER_HIT_TARGET = 10;
@@ -56,6 +56,7 @@ const int ITEMS_NEEDED = 7;
 const float MAP_WIDTH = 30.0f;
 const float MAP_HEIGHT = 20.0f;
 const float GROUND_LEVEL = 0.0f;
+const float BOUND_HEIGHT = 6.0f;
 
 /********** CAMERA CONSTANTS **********/
 const float UP_X = 0.0f;
@@ -70,7 +71,7 @@ const float CAMERA_MAX_SPEED = 0.1f;
 const float CAMERA_ACCELERATION = 0.0003f;
 const float CAMERA_FRICTION = 0.000005f;
 //camera plane is upside-down
-const float CAMERA_STARTING_ANGLE = 90.0f;
+const float CAMERA_STARTING_ANGLE = 45.0f;
 const float CAMERA_TURNING_SPEED = 0.6f;
 const float CAMERA_RESET_TIME = 500.0f;
 
