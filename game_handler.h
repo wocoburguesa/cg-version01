@@ -46,10 +46,10 @@ class GameHandler{
     building.push_back(Point3D(-(MAP_WIDTH+1.0f),
 			       (MAP_WIDTH+1.0f),
 			       GROUND_LEVEL));
-    building.push_back(Point3D(-(MAP_WIDTH+1.0f),
+    building.push_back(Point3D(-(MAP_WIDTH-10.0f),
 			       -(MAP_WIDTH+1.0f),
 			       GROUND_LEVEL));
-    building.push_back(Point3D(-(MAP_WIDTH+1.0f),
+    building.push_back(Point3D(-(MAP_WIDTH-20.0f),
 			       -(MAP_WIDTH+1.0f),
 			       GROUND_LEVEL));
     building.push_back(Point3D(-(MAP_WIDTH+1.0f),
